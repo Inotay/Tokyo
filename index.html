@@ -1476,7 +1476,7 @@ function buildFilters(){
   DAYS.forEach(d=>{const b=document.createElement("button");b.className="chip";b.textContent=`${DNAME[d]} ${d}`;b.setAttribute("aria-pressed",activeDay===d);b.onclick=()=>{activeDay=activeDay===d?null:d;saveState();render();};df.appendChild(b);});
 }
 buildFilters();
-(function(){const rf=document.getElementById("relfilters");[[null,"Toutes fiabilités"],["star","★ Priorités et à ne pas louper"],["sure","Valeurs sûres"],["gem","Pépites et paris"]].forEach(([k,l])=>{const b=document.createElement("button");b.className="chip";b.textContent=l;b.dataset.rel=k||"";b.setAttribute("aria-pressed",relFilter===k);b.onclick=()=>{relFilter=k;document.querySelectorAll("#relfilters .chip").forEach(x=>x.setAttribute("aria-pressed",(x.dataset.rel||null)===relFilter));render();};rf.appendChild(b);});})();
+(function(){const rf=document.getElementById("relfilters");[[null,"Toutes fiabilités"],["star","★ Priorités, envies, à ne pas louper"],["sure","Valeurs sûres"],["gem","Pépites et paris"]].forEach(([k,l])=>{const b=document.createElement("button");b.className="chip";b.textContent=l;b.dataset.rel=k||"";b.setAttribute("aria-pressed",relFilter===k);b.onclick=()=>{relFilter=k;document.querySelectorAll("#relfilters .chip").forEach(x=>x.setAttribute("aria-pressed",(x.dataset.rel||null)===relFilter));render();};rf.appendChild(b);});})();
 (function(){const bar=document.getElementById("ohbar");
   const chip=document.createElement("button");chip.className="chip";chip.setAttribute("aria-pressed",openOnly);
   const sel=document.createElement("select");sel.setAttribute("aria-label","Quand");[["now","Maintenant"],...DAYS.map(d=>[String(d),`${DNAME[d]}. ${d} oct.`])].forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;sel.appendChild(o);});
@@ -1495,7 +1495,7 @@ function resetFilters(){activeCats=new Set(Object.keys(CATS));activeDay=null;rel
   document.querySelectorAll("#relfilters .chip").forEach(x=>x.setAttribute("aria-pressed",!x.dataset.rel));
   const ob=document.getElementById("ohbar");if(ob){const c=ob.querySelector(".chip");if(c){c.setAttribute("aria-pressed","false");c.innerHTML='<span class="dot" style="background:var(--ok)"></span>Ouvert maintenant';}const s=ob.querySelector("select");if(s)s.value="now";const t=ob.querySelector("input[type=time]");if(t)t.hidden=true;}
   hideChooser&&hideChooser();saveState();render();if(typeof toast==="function")toast("Filtres réinitialisés : tout est affiché");}
-function isStar(id){if(typeof TOPR!=="undefined"&&TOPR[id])return true;if(typeof PRIO!=="undefined")return PRIO.some(x=>x[2].includes(id));return false;}
+function isStar(id){try{if(isFav(id))return true;}catch(e){}if(typeof TOPR!=="undefined"&&TOPR[id])return true;if(typeof PRIO!=="undefined")return PRIO.some(x=>x[2].includes(id));return false;}
 function visible(p){if(p.deleted)return false;if(typeof QUERY!=="undefined"&&QUERY)return matchQ(p);if(openOnly&&p.cat!=="base"&&!isOpenNow(p))return false;if(relFilter==="sure"&&relOf(p)!=="sure")return false;if(relFilter==="gem"&&!(p.gem||relOf(p)==="pari"))return false;if(relFilter==="star"&&!isStar(p.id))return false;return activeCats.has(p.cat)&&(activeDay===null||p.days.includes(activeDay)||p.cat==="base"&&p.days.includes(activeDay));}
 let lastErr=0;function reportErr(e){try{console.error(e);const n=Date.now();if(n-lastErr<4000)return;lastErr=n;if(typeof toast==="function")toast("Petit bug : "+String(e&&e.message||e).slice(0,90)+" (envoyez-moi une capture)");}catch(_){}}
 window.addEventListener("error",ev=>reportErr(ev.error||ev.message));
@@ -1507,6 +1507,7 @@ function render(){
   try{if(typeof drawRoute==="function")drawRoute(activeDay);}catch(e){reportErr(e);}
   scheduleLayout();try{if(typeof GLsync==="function")GLsync();}catch(e){reportErr(e);}
   try{if(typeof syncFS==="function")syncFS();}catch(e){}
+  try{P.forEach(p=>{const g=pinEls[p.id];if(!g)return;const st=isStar(p.id),has=g.classList.contains("star");if(st&&!has){g.classList.add("star");el("circle",{class:"ring",r:isPhone()?15:12},g);}else if(!st&&has){g.classList.remove("star");const r=g.querySelector(".ring");if(r)r.remove();}});}catch(e){}
   const list=document.getElementById("placelist");list.innerHTML="";
   document.getElementById("listcount").textContent=(typeof QUERY!=="undefined"&&QUERY)?`${vis.length} résultat${vis.length>1?"s":""} pour « ${document.getElementById("q").value.trim()} »`:`${vis.length} adresse${vis.length>1?"s":""}${activeCats.size<Object.keys(CATS).length?" · "+[...activeCats].filter(k=>CATS[k]&&k!=="base").map(k=>CATS[k].n).join(", "):""}${openOnly?` ouverte${vis.length>1?"s":""} (${whenLabel()})`:""}${activeDay?` · ${DNAME[activeDay]}. ${activeDay} oct.`:""}${O?` · triées depuis ${O.n}`:""}`;
   if(!vis.length){list.innerHTML='<div class="empty">Rien pour ce filtre. <button class="btn" onclick="resetFilters()">↺ Réinitialiser les filtres</button></div>';}
@@ -1982,16 +1983,18 @@ function glStyle(){const c=glCol();const W=(a)=>["interpolate",["exponential",1.
         layout:{"text-field":["format",glName,{},"\n",{},["get","name"],{"font-scale":.85}],"text-font":["Noto Sans Bold"],"text-size":["interpolate",["linear"],["zoom"],12,10.5,16,13],"text-anchor":"top","text-offset":[0,.6],"text-max-width":9,"text-padding":2},paint:{"text-color":c.stn,"text-halo-color":c.halo,"text-halo-width":1.6}}
     ]};}
 function glC(cat){const v=CATS[cat].c;const m=/^var\((--[^)]+)\)$/.exec(v);if(!m)return v;return getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim()||"#888";}
-function glFeat(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:Object.assign({id:p.id,c:glC(p.cat),n:glShort(p.n)},extra||{})};}
+function glFeat(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:Object.assign({id:p.id,c:glC(p.cat),n:glShort(p.n),star:isStar(p.id)},extra||{})};}
 function glAddOverlay(){const m=GL.map,c=glCol();const fc={type:"FeatureCollection",features:[]};
   m.addSource("route",{type:"geojson",data:fc});m.addSource("pl",{type:"geojson",data:fc,cluster:true,clusterRadius:30,clusterMaxZoom:15});m.addSource("fix",{type:"geojson",data:fc});m.addSource("me",{type:"geojson",data:fc});
   m.addLayer({id:"route-line",type:"line",source:"route",filter:["==",["geometry-type"],"LineString"],layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":c.glow,"line-width":4,"line-opacity":.8}},"stn-dot");
   m.addLayer({id:"cl",type:"circle",source:"pl",filter:["has","point_count"],paint:{"circle-color":c.halo,"circle-stroke-color":c.fg,"circle-stroke-width":1.5,"circle-radius":["step",["get","point_count"],15,5,18,12,22]}},"stn-dot");
   m.addLayer({id:"cl-n",type:"symbol",source:"pl",filter:["has","point_count"],layout:{"text-field":["to-string",["get","point_count"]],"text-font":["Noto Sans Bold"],"text-size":13,"text-allow-overlap":true},paint:{"text-color":c.fg}},"stn-dot");
   m.addLayer({id:"pt-hit",type:"circle",source:"pl",filter:["!",["has","point_count"]],paint:{"circle-radius":18,"circle-opacity":0}},"stn-dot");
+  m.addLayer({id:"pt-star",type:"circle",source:"pl",filter:["all",["!",["has","point_count"]],["==",["get","star"],true]],paint:{"circle-radius":12,"circle-color":c.glow,"circle-opacity":.22,"circle-stroke-color":c.glow,"circle-stroke-width":2}},"stn-dot");
   m.addLayer({id:"pt",type:"circle",source:"pl",filter:["!",["has","point_count"]],paint:{"circle-radius":7,"circle-color":["get","c"],"circle-stroke-color":c.halo,"circle-stroke-width":2}},"stn-dot");
   m.addLayer({id:"pt-label",type:"symbol",source:"pl",filter:["!",["has","point_count"]],layout:{"text-field":["get","n"],"text-font":["Noto Sans Bold"],"text-size":12.5,"text-anchor":"left","text-offset":[.9,0],"text-optional":true,"text-max-width":11,"text-padding":3},paint:{"text-color":c.fg,"text-halo-color":c.halo,"text-halo-width":1.8}},"stn-dot");
   m.addLayer({id:"fix-hit",type:"circle",source:"fix",paint:{"circle-radius":20,"circle-opacity":0}});
+  m.addLayer({id:"fix-star",type:"circle",source:"fix",filter:["==",["get","star"],true],paint:{"circle-radius":14,"circle-color":c.glow,"circle-opacity":.22,"circle-stroke-color":c.glow,"circle-stroke-width":2}});
   m.addLayer({id:"fix",type:"circle",source:"fix",paint:{"circle-radius":["case",["get","sel"],11,["get","base"],9,8],"circle-color":["get","c"],"circle-stroke-color":["case",["get","sel"],c.fg,c.halo],"circle-stroke-width":["case",["get","sel"],3,2.5]}});
   m.addLayer({id:"fix-num",type:"symbol",source:"fix",filter:["has","num"],layout:{"text-field":["to-string",["get","num"]],"text-font":["Noto Sans Bold"],"text-size":11,"text-allow-overlap":true},paint:{"text-color":"#ffffff"}});
   m.addLayer({id:"fix-label",type:"symbol",source:"fix",layout:{"text-field":["get","n"],"text-font":["Noto Sans Bold"],"text-size":13.5,"text-anchor":"left","text-offset":[1.1,0],"text-max-width":11,"text-allow-overlap":false,"symbol-sort-key":["case",["get","sel"],0,1]},paint:{"text-color":c.fg,"text-halo-color":c.halo,"text-halo-width":2}});
@@ -2062,7 +2065,7 @@ function syncFS(){const o=document.getElementById("fsopen"),s=document.getElemen
 function setMapFS(on){const box=document.querySelector(".mapbox");if(!box)return;
   box.classList.toggle("fs",on);document.body.classList.toggle("mapfs",on);
   let bar=document.getElementById("fsbar"),sheet=document.getElementById("fssheet");
-  if(on){if(!bar){bar=document.createElement("div");bar.id="fsbar";bar.innerHTML=`<button id="fsopen" class="fsb"><span class="dot"></span>Ouvert maintenant</button><button id="fsstar" class="fsb">★ Priorités</button><button id="fsfilt" class="fsb">☰ Filtres</button>`;box.appendChild(bar);
+  if(on){if(!bar){bar=document.createElement("div");bar.id="fsbar";bar.innerHTML=`<button id="fsopen" class="fsb"><span class="dot"></span>Ouvert maintenant</button><button id="fsstar" class="fsb">★ Priorités et envies</button><button id="fsfilt" class="fsb">☰ Filtres</button>`;box.appendChild(bar);
       sheet=document.createElement("div");sheet.id="fssheet";sheet.hidden=true;sheet.innerHTML=`<div class="hd"><b>Filtres</b><span id="fscount"></span><button id="fsclose" aria-label="Fermer">✕</button></div><div class="bd"><div class="sec"><h5>Jour</h5><div id="fs-day"></div></div><div class="sec"><h5>Sélection</h5><div id="fs-rel"></div></div><div class="sec"><h5>Catégories</h5><div id="fs-cat"></div></div><div class="ft"><button class="btn" onclick="resetFilters();syncFS()">↺ Tout afficher</button><button class="btn primary" id="fsdone">Voir la carte</button></div></div>`;box.appendChild(sheet);
       document.getElementById("fsopen").onclick=()=>toggleOpenOnly();
       document.getElementById("fsstar").onclick=()=>{relFilter=relFilter==="star"?null:"star";document.querySelectorAll("#relfilters .chip").forEach(x=>x.setAttribute("aria-pressed",(x.dataset.rel||null)===relFilter));render();syncFS();};
