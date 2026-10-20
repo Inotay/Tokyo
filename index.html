@@ -1595,16 +1595,20 @@ function cardHtml(p){return `<div class="card sel" style="--cc:${CATS[p.cat].c}"
     ${typeof cardActions==="function"?cardActions(p):""}
     <div class="links"><a href="${p.amap||`https://maps.apple.com/place?coordinate=${p.lat},${p.lng}&name=${encodeURIComponent(p.n)}`}" target="_blank" rel="noopener">Plans ↗</a><a href="https://maps.apple.com/directions?destination=${p.lat},${p.lng}&mode=transit" target="_blank" rel="noopener">Itinéraire Plans ↗</a><a href="${p.gmap||(PID[p.id]?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n)}&query_place_id=${PID[p.id]}`:`https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`)}" target="_blank" rel="noopener">Google Maps ↗</a><a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}${PID[p.id]&&!p.gmap?`&destination_place_id=${PID[p.id]}`:""}&travelmode=transit" target="_blank" rel="noopener">Itinéraire Google ↗</a>${p.link&&!p.link.includes("google.com/maps")?`<a href="${p.link}" target="_blank" rel="noopener">Site / source ↗</a>`:""}${p.insta?`<a href="https://www.instagram.com/${p.insta}/" target="_blank" rel="noopener">@${p.insta} ↗</a>`:""}</div>
     ${altHtml(p)}
+    ${nearHtml(p)}
     <div class="verif">Adresse et liens vérifiés le 15 oct. 2026${PID[p.id]?" · fiche Google exacte":""}</div>
   </div>`;}
 function wireCard(d){const p=byId[selected];
   d.querySelectorAll(".altrow").forEach(b=>b.onclick=()=>{select(b.dataset.id,true);if(isPhone())focusDetail();});
   d.querySelectorAll(".copy").forEach(b=>b.onclick=()=>copyText(b.dataset.copy,b));
   if(p&&typeof wireActions==="function")wireActions(d,p);}
+function cardKey(id){const m=MARKS[id]||{};const o=(typeof originOrEst==="function")?(function(){try{const x=originOrEst();return x?x.n+"|"+Math.round(x.lat*300)+","+Math.round(x.lng*300):"";}catch(e){return ""}})():"";return [id,m.at||0,(m.photos||[]).length,whenDay,whenTime,openOnly,o,Object.keys(MARKS).length].join("|");}
+var DK="",SK="";
 function renderDetail(){
   const d=document.getElementById("detail");
   if(!selected){d.innerHTML=`<div class="card"><div class="eyebrow">Fiche</div><p>Touchez un point ou une ligne de la liste. Les filtres par jour suivent le planning de l'onglet « Jours ».</p></div>`;return;}
   const p=byId[selected];if(!p)return;
+  const k=cardKey(selected);if(k===DK&&d.firstElementChild&&d.firstElementChild.classList.contains("sel"))return;DK=k;
   d.innerHTML=cardHtml(p);wireCard(d);
 }
 
@@ -1797,7 +1801,8 @@ function shrink(file,max){return new Promise(res=>{const img=new Image();const u
 let GEO=null,geoOn=false;
 function startGeo(manual){if(!navigator.geolocation){if(manual)toast("Localisation indisponible sur cette vue : choisissez un point dans « Je suis à »");return;}
   if(geoOn)return;geoOn=true;lsSet("tk-geo",1);
-  navigator.geolocation.watchPosition(pos=>{const first=!GEO;GEO={n:"ma position",lat:pos.coords.latitude,lng:pos.coords.longitude,acc:pos.coords.accuracy,t:Date.now()};
+  navigator.geolocation.watchPosition(pos=>{const first=!GEO;const prev=GEO;GEO={n:"ma position",lat:pos.coords.latitude,lng:pos.coords.longitude,acc:pos.coords.accuracy,t:Date.now()};
+      if(!first&&prev){const moved=km(prev,GEO)*1000;if(moved<30&&Date.now()-(window.__geoR||0)<20000){try{drawOrigin();}catch(e){}return;}}window.__geoR=Date.now();
       if(first&&(manual||originKey===""||originKey==="gps")){originKey="gps";try{localStorage.setItem("tk-origin","gps")}catch(e){}const s=document.getElementById("origin");if(s)s.value="gps";}
       refreshAll();},
     err=>{geoOn=false;if(err.code===1){lsSet("tk-geo-denied",1);lsSet("tk-geo",0);}if(manual)toast(err.code===1?(window.APPMODE?"Localisation refusée. Réglages > Confidentialité > Service de localisation > Safari : autoriser":"L'app Claude ne donne pas la position : choisissez où vous êtes dans la liste"):"Position introuvable pour l'instant, réessayez dehors");refreshAll();},
@@ -1810,7 +1815,7 @@ let sheetId=null;
 function openSheet(id){const p=byId[id];if(!p)return;
   if(!isPhone()){showTab("map");select(id,true);requestAnimationFrame(()=>{const t=document.getElementById("view-map");t&&t.scrollIntoView({behavior:"smooth",block:"start"});});return;}
   selected=id;sheetId=id;Object.values(pinEls).forEach(g=>g.classList.remove("active"));if(pinEls[id])pinEls[id].classList.add("active");
-  sheetBody.innerHTML=cardHtml(p);wireCard(sheetBody);sheetBody.scrollTop=0;
+  SK=cardKey(id);sheetBody.innerHTML=cardHtml(p);wireCard(sheetBody);sheetBody.scrollTop=0;
   sheet.hidden=false;sheetBg.hidden=false;requestAnimationFrame(()=>{sheet.classList.add("on");sheetBg.classList.add("on");});scheduleLayout();}
 function closeSheet(){sheet.classList.remove("on");sheetBg.classList.remove("on");sheetId=null;setTimeout(()=>{if(!sheetId){sheet.hidden=true;sheetBg.hidden=true;}},260);}
 sheet.querySelector(".sheet-grab button").onclick=closeSheet;sheetBg.onclick=closeSheet;
@@ -1826,7 +1831,7 @@ function cardActions(p){const f=myFav(p.id),d=isDone(p.id),m=MARKS[p.id]||{};con
     <button class="btn fav" data-act="fav" aria-pressed="${f}">${f?"♥ Envie":"♡ Envie"}</button>
     <button class="btn dn" data-act="done" aria-pressed="${d}">${d?"✓ Fait":"Marquer fait"}</button>
     <button class="btn" data-act="taxi">${icon("base")} Chauffeur</button>
-    <button class="btn" data-act="here">📍 Je suis ici</button>
+    <button class="btn" data-act="here">🧭 Autour d'ici</button>
     ${ASSETS?`<label class="btn" style="cursor:pointer">📷 Photo<input type="file" accept="image/*" data-act="photo" hidden></label>`:""}
   </div>
   ${others.length?`<div class="byline">♥ aussi pour ${esc(others.join(", "))}</div>`:""}
@@ -1870,7 +1875,13 @@ function estPos(day){const live=tripDayNow();const T=nowTokyo(),m=T.getUTCHours(
   let best=null;d.stops.forEach(([t,id])=>{if(/^ou /.test(t))return;const sm=stopMin(t),p=byId[id];if(!p||p.lat>LAT0)return;if((sm!=null&&sm<=m)||isDone(id))best=p;});
   const q=best||b;return q?{n:q.n,lat:q.lat,lng:q.lng,est:true}:null;}
 function curOrigin(day){if(GEO)return GEO;if(originKey&&originKey!=="gps"&&originKey!=="sel"){const o=getOrigin();if(o)return o;}return estPos(day);}
-function setHere(id){originKey="p:"+id;try{localStorage.setItem("tk-origin",originKey)}catch(e){}const s=document.getElementById("origin");if(s){if(![...s.options].some(o=>o.value===originKey)){const o=document.createElement("option");o.value=originKey;o.textContent="Ici : "+byId[id].n;s.appendChild(o);}s.value=originKey;}toast("Position : "+byId[id].n);refreshAll();}
+function setHere(id){const p=byId[id];originKey="p:"+id;try{localStorage.setItem("tk-origin",originKey)}catch(e){}const s=document.getElementById("origin");if(s){if(![...s.options].some(o=>o.value===originKey)){const o=document.createElement("option");o.value=originKey;o.textContent="Ici : "+p.n;s.appendChild(o);}s.value=originKey;}
+  try{if(typeof closeSheet==="function")closeSheet();}catch(e){}showTab("map");
+  try{if(typeof GL!=="undefined"&&GL.map&&GL.ready)GL.map.flyTo({center:[p.lng,p.lat],zoom:Math.max(GL.map.getZoom(),16),duration:600});else centerOn(p);}catch(e){}
+  toast("Autour de "+p.n+" : liste triée par distance");refreshAll();
+  requestAnimationFrame(()=>{try{const l=document.getElementById("placelist");if(l&&!isPhone())l.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}});}
+function nearHtml(p){const L=P.filter(q=>q!==p&&!q.deleted&&q.cat!=="base"&&km(p,q)<=0.9).sort((a,b)=>km(p,a)-km(p,b)).slice(0,6);
+  if(!L.length)return "";return `<div class="alt"><div class="eyebrow">Autour, à pied</div>${L.map(q=>{const s=status(q);return `<button class="altrow" data-id="${q.id}" style="--cc:${CATS[q.cat].c}"><span class="d"></span><span><b>${esc(q.n)}</b><small>${esc(travelShort(p,q))}${s&&s.short?" · "+esc(s.short):""} · ${esc(CATS[q.cat].n)}</small></span></button>`}).join("")}</div>`;}
 function originPicker(day,O){const d=PLAN.find(x=>x.d===day);const opts=[["est","D'après le planning (estimé)"],["b1","Logement 1 · Araiyakushi-mae"],["b2","Logement 2 · Nishi-Waseda"]];
   if(d)d.stops.forEach(([t,id])=>{const p=byId[id];if(p&&!/^ou /.test(t)&&p.lat<=LAT0&&p.cat!=="base")opts.push(["p:"+id,t+" · "+p.n]);});
   STATIONS.forEach(s=>opts.push(["st:"+s[0],"Gare de "+s[0]]));
@@ -1984,7 +1995,7 @@ function matchQ(p){if(!QUERY)return true;const j=JA[p.id]||{};const hay=norm([p.
   document.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{mv=b.dataset.mv;lsSet("tk-mv",mv);apply();});apply();})();
 // ---------- refresh everything that shows shared state
 var rfQ=false;function refreshAll(){if(rfQ)return;rfQ=true;requestAnimationFrame(()=>{rfQ=false;try{render();}catch(e){}try{rebuildDays();}catch(e){}try{renderNow();}catch(e){}try{renderTop();}catch(e){}try{renderTrain();}catch(e){}
-  if(sheetId&&!sheet.hidden){const ae=document.activeElement;if(!(ae&&sheetBody.contains(ae)&&ae.tagName==="TEXTAREA")){const sc=sheetBody.scrollTop;sheetBody.innerHTML=cardHtml(byId[sheetId]);wireCard(sheetBody);sheetBody.scrollTop=sc;}}});}
+  if(sheetId&&!sheet.hidden){const ae=document.activeElement;if(!(ae&&sheetBody.contains(ae)&&ae.tagName==="TEXTAREA")){const k=cardKey(sheetId);if(k!==SK){SK=k;const sc=sheetBody.scrollTop;sheetBody.innerHTML=cardHtml(byId[sheetId]);wireCard(sheetBody);sheetBody.scrollTop=sc;}}}});}
 setInterval(()=>{renderNow();renderTrain();},60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){REFc=null;renderNow();renderTrain();}});
 
