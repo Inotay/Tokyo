@@ -443,7 +443,24 @@ nav.tabs .ti{display:none}
 .mapctl{z-index:3}
 .mapbox.fs{position:fixed;inset:0;z-index:38;border-radius:0;border:0;aspect-ratio:auto;height:auto;min-height:0;max-width:none;margin:0}
 .mapbox.fs .mapctl{top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px))}
-.mapbox.fs .maphint{bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+.mapbox.fs .maphint{display:none}
+#fsbar{position:absolute;z-index:4;left:calc(10px + env(safe-area-inset-left,0px));right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px}
+#fsbar .fsb{flex:1 1 0;min-width:0;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--fg);font-family:var(--font-body);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 2px 10px rgba(0,0,0,.25);white-space:nowrap;padding:0 8px}
+#fsbar .fsb .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}
+#fsbar .fsb[aria-pressed="true"]{background:var(--glow);color:#141416;border-color:var(--glow)}
+#fsopen[aria-pressed="true"]{background:var(--ok)!important;color:#fff!important;border-color:var(--ok)!important}
+#fsopen[aria-pressed="true"] .dot{background:#fff}
+#fssheet{position:absolute;z-index:5;left:0;right:0;bottom:0;max-height:78%;background:var(--bg);color:var(--fg);border-radius:18px 18px 0 0;box-shadow:0 -6px 30px rgba(0,0,0,.35);display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+#fssheet[hidden],#fsbar[hidden]{display:none!important}
+#fssheet .hd{display:flex;align-items:center;gap:10px;padding:14px 16px 8px;border-bottom:1px solid var(--line)}
+#fssheet .hd b{font-size:17px}#fssheet .hd span{color:var(--fg2);font-size:13px;flex:1}
+#fssheet .hd button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg2);color:var(--fg);font-size:16px}
+#fssheet .bd{overflow-y:auto;padding:6px 16px 14px}
+#fssheet .sec h5{margin:12px 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg2);font-family:var(--font-mono)}
+#fssheet .filters,#fssheet .dayfilter{flex-wrap:wrap;overflow:visible;margin-bottom:4px}
+#fssheet .chip{font-size:13.5px;padding:8px 13px}
+#fssheet .ft{display:flex;gap:8px;margin-top:14px}#fssheet .ft .btn{flex:1;padding:12px;font-size:15px}
+.mapbox.fs .mapctl{top:calc(10px + env(safe-area-inset-top,0px))}
 .mapbox.fs .chooser{bottom:calc(8px + env(safe-area-inset-bottom,0px))}
 body.mapfs{overflow:hidden}
 #catfilters.fschips{position:absolute;z-index:3;left:calc(8px + env(safe-area-inset-left,0px));right:calc(62px + env(safe-area-inset-right,0px));top:calc(10px + env(safe-area-inset-top,0px));display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:0 0 4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -1465,7 +1482,7 @@ buildFilters();
   const sel=document.createElement("select");sel.setAttribute("aria-label","Quand");[["now","Maintenant"],...DAYS.map(d=>[String(d),`${DNAME[d]}. ${d} oct.`])].forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;sel.appendChild(o);});
   const tm=document.createElement("input");tm.type="time";tm.value=whenTime;tm.step=900;tm.setAttribute("aria-label","Heure");tm.hidden=true;
   const lab=()=>{chip.innerHTML=`<span class="dot" style="background:var(--ok)"></span>${whenDay==="now"?"Ouvert maintenant":"Ouvert à ce moment"}`;};lab();
-  window.toggleOpenOnly=function(){openOnly=!openOnly;chip.setAttribute("aria-pressed",openOnly);try{localStorage.setItem("tk-open",openOnly?"1":"0")}catch(e){}const z=document.getElementById("zopen");if(z)z.setAttribute("aria-pressed",openOnly);render();};chip.onclick=toggleOpenOnly;
+  window.toggleOpenOnly=function(){openOnly=!openOnly;chip.setAttribute("aria-pressed",openOnly);try{localStorage.setItem("tk-open",openOnly?"1":"0")}catch(e){}render();if(typeof syncFS==="function")syncFS();};chip.onclick=toggleOpenOnly;
   sel.onchange=()=>{whenDay=sel.value;tm.hidden=whenDay==="now";REFc=null;lab();render();};
   tm.onchange=()=>{whenTime=tm.value||"20:00";REFc=null;render();};
   bar.append(chip,sel,tm);
@@ -1489,6 +1506,7 @@ function render(){
   try{drawOrigin();}catch(e){reportErr(e);}
   try{if(typeof drawRoute==="function")drawRoute(activeDay);}catch(e){reportErr(e);}
   scheduleLayout();try{if(typeof GLsync==="function")GLsync();}catch(e){reportErr(e);}
+  try{if(typeof syncFS==="function")syncFS();}catch(e){}
   const list=document.getElementById("placelist");list.innerHTML="";
   document.getElementById("listcount").textContent=(typeof QUERY!=="undefined"&&QUERY)?`${vis.length} résultat${vis.length>1?"s":""} pour « ${document.getElementById("q").value.trim()} »`:`${vis.length} adresse${vis.length>1?"s":""}${activeCats.size<Object.keys(CATS).length?" · "+[...activeCats].filter(k=>CATS[k]&&k!=="base").map(k=>CATS[k].n).join(", "):""}${openOnly?` ouverte${vis.length>1?"s":""} (${whenLabel()})`:""}${activeDay?` · ${DNAME[activeDay]}. ${activeDay} oct.`:""}${O?` · triées depuis ${O.n}`:""}`;
   if(!vis.length){list.innerHTML='<div class="empty">Rien pour ce filtre. <button class="btn" onclick="resetFilters()">↺ Réinitialiser les filtres</button></div>';}
@@ -2037,14 +2055,25 @@ function initGL(){if(GL.map||!window.maplibregl)return;
   m.on("load",()=>setTimeout(onSize,0));
 }
 // full-screen map
-function setMapFS(on){const box=document.querySelector(".mapbox");if(!box)return;const cf=document.getElementById("catfilters");
+function syncFS(){const o=document.getElementById("fsopen"),s=document.getElementById("fsstar"),f=document.getElementById("fsfilt"),c=document.getElementById("fscount");if(!o)return;
+  o.setAttribute("aria-pressed",openOnly);s.setAttribute("aria-pressed",relFilter==="star");
+  const n=(activeDay?1:0)+(activeCats.size<Object.keys(CATS).length?1:0)+(relFilter&&relFilter!=="star"?1:0);f.setAttribute("aria-pressed",n>0);f.textContent=n?`☰ Filtres (${n})`:"☰ Filtres";
+  const vis=P.filter(p=>{try{return visible(p)&&p.cat!=="base"}catch(e){return false}}).length;if(c)c.textContent=`${vis} lieux affichés`;}
+function setMapFS(on){const box=document.querySelector(".mapbox");if(!box)return;
   box.classList.toggle("fs",on);document.body.classList.toggle("mapfs",on);
-  if(on){if(cf&&!box.contains(cf)){GL.cfHome=cf.parentNode;GL.cfNext=cf.nextSibling;box.appendChild(cf);cf.classList.add("fschips");}}
-  else if(cf&&GL.cfHome){GL.cfHome.insertBefore(cf,GL.cfNext);cf.classList.remove("fschips");}
+  let bar=document.getElementById("fsbar"),sheet=document.getElementById("fssheet");
+  if(on){if(!bar){bar=document.createElement("div");bar.id="fsbar";bar.innerHTML=`<button id="fsopen" class="fsb"><span class="dot"></span>Ouvert maintenant</button><button id="fsstar" class="fsb">★ Priorités</button><button id="fsfilt" class="fsb">☰ Filtres</button>`;box.appendChild(bar);
+      sheet=document.createElement("div");sheet.id="fssheet";sheet.hidden=true;sheet.innerHTML=`<div class="hd"><b>Filtres</b><span id="fscount"></span><button id="fsclose" aria-label="Fermer">✕</button></div><div class="bd"><div class="sec"><h5>Jour</h5><div id="fs-day"></div></div><div class="sec"><h5>Sélection</h5><div id="fs-rel"></div></div><div class="sec"><h5>Catégories</h5><div id="fs-cat"></div></div><div class="ft"><button class="btn" onclick="resetFilters();syncFS()">↺ Tout afficher</button><button class="btn primary" id="fsdone">Voir la carte</button></div></div>`;box.appendChild(sheet);
+      document.getElementById("fsopen").onclick=()=>toggleOpenOnly();
+      document.getElementById("fsstar").onclick=()=>{relFilter=relFilter==="star"?null:"star";document.querySelectorAll("#relfilters .chip").forEach(x=>x.setAttribute("aria-pressed",(x.dataset.rel||null)===relFilter));render();syncFS();};
+      document.getElementById("fsfilt").onclick=()=>{sheet.hidden=!sheet.hidden;};
+      document.getElementById("fsclose").onclick=document.getElementById("fsdone").onclick=()=>{sheet.hidden=true;};}
+    const mv=(id,to)=>{const el=document.getElementById(id);if(el&&!GL["home_"+id]){GL["home_"+id]=el.parentNode;GL["next_"+id]=el.nextSibling;}if(el)document.getElementById(to).appendChild(el);};
+    mv("dayfilters","fs-day");mv("relfilters","fs-rel");mv("catfilters","fs-cat");bar.hidden=false;syncFS();}
+  else{["dayfilters","relfilters","catfilters"].forEach(id=>{const el=document.getElementById(id);if(el&&GL["home_"+id])GL["home_"+id].insertBefore(el,GL["next_"+id]);});if(bar)bar.hidden=true;if(sheet)sheet.hidden=true;}
   document.getElementById("zfs").setAttribute("aria-pressed",on);document.getElementById("zfs").innerHTML=on?"✕":"⛶";
   setTimeout(()=>{if(GL.map)GL.map.resize();else{measure();applyVB();}},60);}
-(function(){const ctl=document.querySelector(".mapctl");if(!ctl)return;const ob=document.createElement("button");ob.id="zopen";ob.className="zopen";ob.setAttribute("aria-label","Seulement ce qui est ouvert maintenant");ob.setAttribute("aria-pressed",openOnly);ob.innerHTML='<span class="dot"></span>Ouvert maintenant';ob.onclick=()=>toggleOpenOnly();ctl.appendChild(ob);
-  const b=document.createElement("button");b.id="zfs";b.setAttribute("aria-label","Carte en plein écran");b.innerHTML="⛶";b.onclick=()=>setMapFS(!document.querySelector(".mapbox").classList.contains("fs"));ctl.insertBefore(b,ctl.firstChild);
+(function(){const ctl=document.querySelector(".mapctl");if(!ctl)return;const b=document.createElement("button");b.id="zfs";b.setAttribute("aria-label","Carte en plein écran");b.innerHTML="⛶";b.onclick=()=>setMapFS(!document.querySelector(".mapbox").classList.contains("fs"));ctl.insertBefore(b,ctl.firstChild);
   if(window.APPMODE&&navigator.geolocation){const l=document.createElement("button");l.id="zloc";l.setAttribute("aria-label","Me localiser");l.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke="currentColor" stroke-width="2"/></svg>';l.onclick=()=>glLocate();ctl.appendChild(l);}
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.body.classList.contains("mapfs"))setMapFS(false);});})();
 (function(){const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js";s.async=true;s.onload=()=>{try{initGL();}catch(e){reportErr(e);}};document.head.appendChild(s);})();
