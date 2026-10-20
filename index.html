@@ -12,6 +12,13 @@
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{-webkit-text-size-adjust:100%}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>window.APPMODE=true;</script>
 </head><body>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#141416;color:#efede8;display:flex;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif"><form id="gatef" style="width:min(320px,86vw);text-align:center"><div style="font-size:13px;letter-spacing:.14em;color:#9a968f;margin-bottom:10px">YATONI &amp; MARIANA</div><div style="font-size:30px;font-weight:700;margin-bottom:22px">Tokyo 15–25</div><input id="gatei" type="password" inputmode="numeric" autocomplete="off" placeholder="Code" aria-label="Code d'accès" style="width:100%;box-sizing:border-box;font-size:22px;text-align:center;padding:12px;border-radius:12px;border:1px solid #3a3a3e;background:#1d1d20;color:#efede8;letter-spacing:.3em"><button type="submit" style="margin-top:14px;width:100%;padding:12px;border-radius:12px;border:0;background:#e3b06c;color:#141416;font-size:16px;font-weight:700">Entrer</button><div id="gatee" style="min-height:20px;margin-top:10px;font-size:13px;color:#e37c6c"></div></form></div>
+<script>(function(){const H="a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";const K="tk-gate";async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+function ok(){const g=document.getElementById("gate");if(g)g.remove();document.documentElement.style.overflow="";}
+try{if(localStorage.getItem(K)===H){ok();return;}}catch(e){}
+document.documentElement.style.overflow="hidden";
+const f=document.getElementById("gatef");f.onsubmit=async e=>{e.preventDefault();const v=document.getElementById("gatei").value.trim();if(await sha(v)===H){try{localStorage.setItem(K,H)}catch(e){}ok();}else{document.getElementById("gatee").textContent="Code incorrect";}};
+setTimeout(()=>{try{document.getElementById("gatei").focus()}catch(e){}},50);})();</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: a dark city plan on the left, a card column on the right; below, the day-by-day and the original list as a checklist. Concrete, chrome, one warm Akari glow. */
