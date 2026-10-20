@@ -82,6 +82,11 @@ section.view{padding-block:22px}
 .mapctl{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
 .mapctl button{width:34px;height:34px;border-radius:6px;border:1px solid var(--line);background:var(--bg2);color:var(--fg);font-family:var(--font-mono);font-size:16px;cursor:pointer}
 .mapctl button:focus-visible{outline:2px solid var(--glow)}
+.mapctl .zopen{width:auto!important;height:auto!important;padding:9px 12px;border-radius:999px;font-family:var(--font-body,inherit);font-size:13px!important;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.mapctl .zopen .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);display:inline-block}
+.mapctl .zopen[aria-pressed="true"]{background:var(--ok);color:#fff;border-color:var(--ok)}
+.mapctl .zopen[aria-pressed="true"] .dot{background:#fff}
+.mapbox:not(.fs) .zopen{display:none}
 .maphint{position:absolute;left:10px;bottom:8px;font-family:var(--font-mono);font-size:10.5px;color:var(--map-text);pointer-events:none}
 .pin{cursor:pointer}
 .pin .ring{fill:none;stroke:var(--glow);stroke-width:2;stroke-dasharray:3 2;opacity:.9}
@@ -1460,7 +1465,7 @@ buildFilters();
   const sel=document.createElement("select");sel.setAttribute("aria-label","Quand");[["now","Maintenant"],...DAYS.map(d=>[String(d),`${DNAME[d]}. ${d} oct.`])].forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;sel.appendChild(o);});
   const tm=document.createElement("input");tm.type="time";tm.value=whenTime;tm.step=900;tm.setAttribute("aria-label","Heure");tm.hidden=true;
   const lab=()=>{chip.innerHTML=`<span class="dot" style="background:var(--ok)"></span>${whenDay==="now"?"Ouvert maintenant":"Ouvert à ce moment"}`;};lab();
-  chip.onclick=()=>{openOnly=!openOnly;chip.setAttribute("aria-pressed",openOnly);try{localStorage.setItem("tk-open",openOnly?"1":"0")}catch(e){}render();};
+  window.toggleOpenOnly=function(){openOnly=!openOnly;chip.setAttribute("aria-pressed",openOnly);try{localStorage.setItem("tk-open",openOnly?"1":"0")}catch(e){}const z=document.getElementById("zopen");if(z)z.setAttribute("aria-pressed",openOnly);render();};chip.onclick=toggleOpenOnly;
   sel.onchange=()=>{whenDay=sel.value;tm.hidden=whenDay==="now";REFc=null;lab();render();};
   tm.onchange=()=>{whenTime=tm.value||"20:00";REFc=null;render();};
   bar.append(chip,sel,tm);
@@ -1981,7 +1986,7 @@ function GLsync(){if(!GL.ready)return;const m=GL.map;
   const vis=P.filter(p=>{try{return visible(p)}catch(e){return false}});
   const stops=activeDay?glRouteStops(activeDay):[];const sIds=new Set(stops.map(p=>p.id));
   const fixed=[],pool=[];vis.forEach(p=>{if(p.id===selected||p.cat==="base"||sIds.has(p.id))fixed.push(p);else pool.push(p);});
-  if(selected&&byId[selected]&&!fixed.includes(byId[selected]))fixed.push(byId[selected]);
+  
   m.getSource("pl").setData({type:"FeatureCollection",features:pool.map(p=>glFeat(p))});
   m.getSource("fix").setData({type:"FeatureCollection",features:fixed.map(p=>glFeat(p,{sel:p.id===selected,base:p.cat==="base",...(sIds.has(p.id)?{num:stops.indexOf(p)+1}:{})}))});
   m.getSource("route").setData({type:"FeatureCollection",features:stops.length>1?[{type:"Feature",geometry:{type:"LineString",coordinates:stops.filter(p=>p.lat<36.2).map(p=>[p.lng,p.lat])},properties:{}}]:[]});
@@ -2038,7 +2043,8 @@ function setMapFS(on){const box=document.querySelector(".mapbox");if(!box)return
   else if(cf&&GL.cfHome){GL.cfHome.insertBefore(cf,GL.cfNext);cf.classList.remove("fschips");}
   document.getElementById("zfs").setAttribute("aria-pressed",on);document.getElementById("zfs").innerHTML=on?"✕":"⛶";
   setTimeout(()=>{if(GL.map)GL.map.resize();else{measure();applyVB();}},60);}
-(function(){const ctl=document.querySelector(".mapctl");if(!ctl)return;const b=document.createElement("button");b.id="zfs";b.setAttribute("aria-label","Carte en plein écran");b.innerHTML="⛶";b.onclick=()=>setMapFS(!document.querySelector(".mapbox").classList.contains("fs"));ctl.insertBefore(b,ctl.firstChild);
+(function(){const ctl=document.querySelector(".mapctl");if(!ctl)return;const ob=document.createElement("button");ob.id="zopen";ob.className="zopen";ob.setAttribute("aria-label","Seulement ce qui est ouvert maintenant");ob.setAttribute("aria-pressed",openOnly);ob.innerHTML='<span class="dot"></span>Ouvert maintenant';ob.onclick=()=>toggleOpenOnly();ctl.appendChild(ob);
+  const b=document.createElement("button");b.id="zfs";b.setAttribute("aria-label","Carte en plein écran");b.innerHTML="⛶";b.onclick=()=>setMapFS(!document.querySelector(".mapbox").classList.contains("fs"));ctl.insertBefore(b,ctl.firstChild);
   if(window.APPMODE&&navigator.geolocation){const l=document.createElement("button");l.id="zloc";l.setAttribute("aria-label","Me localiser");l.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3" stroke="currentColor" stroke-width="2"/></svg>';l.onclick=()=>glLocate();ctl.appendChild(l);}
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.body.classList.contains("mapfs"))setMapFS(false);});})();
 (function(){const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js";s.async=true;s.onload=()=>{try{initGL();}catch(e){reportErr(e);}};document.head.appendChild(s);})();
