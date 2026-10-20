@@ -444,6 +444,7 @@ body.mapfs{overflow:hidden}
 <div class="trainbar" id="trainbar" hidden></div>
 <nav class="tabs" role="tablist" aria-label="Sections">
   <button role="tab" aria-selected="false" data-tab="now">Maintenant</button>
+  <button role="tab" aria-selected="false" data-tab="top">★ À ne pas louper</button>
   <button role="tab" aria-selected="true" data-tab="map">Carte</button>
   <button role="tab" aria-selected="false" data-tab="days">Jour par jour</button>
   <button role="tab" aria-selected="false" data-tab="list">La liste</button>
@@ -451,6 +452,7 @@ body.mapfs{overflow:hidden}
 </nav>
 
 <section class="view" id="view-now" role="tabpanel" hidden></section>
+<section class="view" id="view-top" role="tabpanel" hidden></section>
 
 <section class="view" id="view-map" role="tabpanel">
   <div class="viewtoggle" role="group" aria-label="Affichage"><button type="button" data-mv="map" aria-pressed="true">Carte + liste</button><button type="button" data-mv="list" aria-pressed="false">Liste seule</button></div>
@@ -1621,6 +1623,11 @@ function toggleFav(id){const m=MARKS[id]||{};const fb=Object.assign({},m.favBy||
 function isDone(id){return !!(MARKS[id]&&MARKS[id].done);}
 function toggleDone(id){markSet(id,{done:!isDone(id),doneBy:ME||null});}
 const TOP=[["a7", "mer. 21 à 18 h ou dim. 25 à 17 h · dernier jour le 25", "Ambient Kyoto de Ryuichi Sakamoto et Shiro Takatani : une installation sonore et lumineuse, faite pour toi, qui ferme dimanche.", 25], ["ev3", "tous les jours 11–21 h · prévu ven. 23 vers 19:45", "Une centaine d'estampes originales de Kunisada et Kuniyoshi accrochées sur une vraie scène de nō en plein Kabukichō.", 25], ["z10", "sam. 24, de 16:15 à 18 h", "La grande boucle mode d'Aoyama pour Mariana : Yohji, Comme des Garçons, Issey Miyake, Prada, Miu Miu et Vivienne Westwood à quelques pas les uns des autres.", 25], ["nb5", "ven. 23 à 11 h · fermé mer.", "Hyakudan Kaidan : 99 marches et sept salles de banquet couvertes de peintures et de nacre, une opulence Shōwa entre Lynch et Elden Ring.", 25], ["ev5", "dim. 25 vers 12 h · créneau Lawson Ticket", "MAPPA EXPO : dessins originaux de Chainsaw Man et du film Reze. La partie Chainsaw Man se termine dimanche.", 25], ["ev1", "ven. 23, 18:30 · billets e+", "Amenra en club à Daikanyama : le post-metal rituel, très fort, dans une salle réputée pour son son.", 23], ["na7", "mer. 21 vers 14:15 · fermé lun.", "Kunisada au musée Okura, dans un pavillon de 1927 peuplé de créatures fantastiques sculptées.", 25], ["ev4", "jeu. 22, 13–21 h", "Re: Horror : de vrais décors de films d'horreur japonais, des lieux liminaux grandeur nature qu'on peut toucher.", 25], ["nr5", "jeu. 22 au dîner · réserver", "Isegen : la baudroie servie dans une maison de bois de 1930, la table la plus mémorable de la semaine.", 22], ["z7", "dim. 25 vers 11:20 · gratuit", "Intermediatheque : squelettes, modèles anatomiques et minéraux dans des vitrines anciennes, le vrai cabinet de curiosités.", 25], ["sf1", "dim. 25 vers 12:55", "Le 2nd Street de Ginza, ouvert en septembre : une sélection resserrée de Comme des Garçons, Issey et Margiela, la meilleure chasse pour Mariana.", 25], ["es1", "sam. 24 à 10 h · fermé dim. et lun.", "L'atelier Adachi grave et imprime encore les estampes à la main : on peut repartir avec un Kuniyoshi tiré à l'ancienne.", 24], ["a5", "sam. 24 à 15 h · rouvre ce jour-là", "Le musée Nezu de Kengo Kuma, son allée de bambou et son jardin, avec les costumes de bugaku. Chic et japonisant, pour Mariana.", 25], ["ev2", "sam. 24 et dim. 25 · guichet dès 9:10", "Daniel Hui et The Tale of Iya en 35 mm au Waseda Shōchiku, à 10 minutes du logement.", 25], ["z6", "ven. 23 vers 12 h · fermé lun. et mar.", "Le musée des parasites de Meguro : bocaux de formol et ténia de 8,8 m sous une lumière franchement gothique.", 23], ["na11", "mer. 21 après 21 h", "MUSIUM : 100 000 vinyles, on choisit l'humeur avec des billes et le DJ improvise.", 24], ["t1", "dim. 25 avant 10 h", "Matcha sur l'étang de marée de Hama-rikyu, dans un pavillon d'Edo face aux tours de Shiodome.", 25], ["ev8", "sam. 24 jusqu'à 20 h · prévente jusqu'au 23", "Turner et le sublime, tempêtes et brumes : le cousin anglais de Friedrich.", 25], ["ev11", "dim. 25 · dernier jour", "Le pop-up Margiela AW26 chez Dover Street Market Ginza, décor de défilé presque urbex.", 25]];const TOPR={};TOP.forEach((t,i)=>TOPR[t[0]]=i+1);
+function topRow([t,i]){const p=byId[t[0]];return `<div class="tl-row top-row${isDone(p.id)?" done":""}" data-open="${p.id}" role="button" tabindex="0"><span class="rk">${i+1}</span><span><b>${esc(p.n)}${isDone(p.id)?`<span class="mk done">✓</span>`:""}</b><span class="when">${esc(t[1])}</span><small>${esc(t[2])}</small></span><span></span></div>`}
+function renderTop(){const v=document.getElementById("view-top");if(!v||v.hidden)return;const lv=tripDayNow()||0;
+  const rows=TOP.map((t,i)=>[t,i]).filter(([t])=>byId[t[0]]&&!(lv&&t[3]<lv));const nd=rows.filter(([t])=>isDone(t[0])).length;
+  v.innerHTML=`<div class="now"><div class="now-head"><h2>À ne pas louper</h2><span class="clock">${nd}/${rows.length} fait${nd>1?"s":""}</span></div><p class="intro" style="color:var(--fg2);font-size:14px;margin:0 0 8px">Le classement des choses à ne pas rater d'ici dimanche, selon vos goûts et ce qui ferme bientôt. Touchez une ligne pour ouvrir la fiche, puis « ✓ Fait » pour la cocher.</p><div class="near">${rows.map(topRow).join("")}</div></div>`;
+  v.querySelectorAll("[data-open]").forEach(b=>{const go=()=>openSheet(b.dataset.open);b.onclick=go;b.onkeydown=e=>{if(e.key==="Enter")go();};});}
 function markBadges(p){return (TOPR[p.id]?`<span class="mk top" title="À ne pas louper">#${TOPR[p.id]}</span>`:"")+(isFav(p.id)?`<span class="mk fav" title="Envie">♥</span>`:"")+(isDone(p.id)?`<span class="mk done" title="Fait">✓</span>`:"");}
 function syncLabel(){return SYNC==="on"?"Synchronisé entre vos téléphones":SYNC==="ro"?"Lecture seule : demandez un accès Contributeur pour cocher":"Enregistré sur ce téléphone seulement";}
 function applyCustom(docs){const seen=new Set();
@@ -1775,10 +1782,9 @@ function renderNow(){const v=document.getElementById("view-now");if(!v||v.hidden
       h+=`<div class="tl-row${alt?" alt":""}${isDone(id)?" done":""}${j===ni?" cur":""}" data-open="${id}" role="button" tabindex="0"><span class="t">${esc(t.replace(/^ou /,""))}</span>${cicon(p)}<span><b>${esc(p.n)}${markBadges(p)}</b><small>${s?`<span class="oh oh-${s.k}">${s.tag}</span>`:""}${esc(why||"")}</small></span>${alt?"<span></span>":`<button class="chk" data-done="${id}" aria-pressed="${isDone(id)}" aria-label="Marquer fait">✓</button>`}</div>`;});
     if(live===day&&!nowShown)h+=`<div class="tl-now">maintenant</div>`;
     h+=`</div><div class="dayacts"><button class="btn sm" data-route="${day}">${icon("map")} Trajet sur la carte</button></div></div>`;}
-  // top list
-  {const lv=live||0;const rows=TOP.map((t,i)=>[t,i]).filter(([t])=>byId[t[0]]&&!(lv&&t[3]<lv));
-   const row=([t,i])=>{const p=byId[t[0]];return `<div class="tl-row top-row${isDone(p.id)?" done":""}" data-open="${p.id}" role="button" tabindex="0"><span class="rk">${i+1}</span><span><b>${esc(p.n)}${isDone(p.id)?`<span class="mk done">✓</span>`:""}</b><span class="when">${esc(t[1])}</span><small>${esc(t[2])}</small></span><span></span></div>`};
-   if(rows.length)h+=`<div class="sect"><h4>À ne pas louper, le classement</h4><div class="near">${rows.slice(0,10).map(row).join("")}</div>${rows.length>10?`<details class="topmore"><summary>Voir les ${rows.length-10} suivants</summary><div class="near">${rows.slice(10).map(row).join("")}</div></details>`:""}</div>`;}
+  // top list (compact)
+  {const lv=live||0;const rows=TOP.map((t,i)=>[t,i]).filter(([t])=>byId[t[0]]&&!(lv&&t[3]<lv)&&!isDone(t[0]));
+   if(rows.length)h+=`<div class="sect"><h4>À ne pas louper</h4><div class="near">${rows.slice(0,3).map(topRow).join("")}</div><div class="dayacts"><button class="btn sm" data-gotop>★ Voir tout le classement (${TOP.length})</button></div></div>`;}
   // around me
   h+=`<div class="sect"><h4>Autour de vous, ouvert maintenant</h4>`;
   const ref=O||(d?(()=>{const i=nextStopIdx(day,live===day?m:-1);return i>=0?byId[d.stops[i][1]]:null;})():null);
@@ -1807,6 +1813,7 @@ function renderNow(){const v=document.getElementById("view-now");if(!v||v.hidden
   v.querySelectorAll("[data-done]").forEach(b=>b.onclick=e=>{e.stopPropagation();toggleDone(b.dataset.done);});
   v.querySelectorAll("[data-taxi]").forEach(b=>b.onclick=e=>{e.stopPropagation();openTaxi(b.dataset.taxi);});
   v.querySelectorAll("[data-route]").forEach(b=>b.onclick=()=>showRoute(+b.dataset.route));
+  v.querySelectorAll("[data-gotop]").forEach(b=>b.onclick=()=>{showTab("top");window.scrollTo(0,0);});
   const fa=v.querySelector("[data-addplace]");if(fa)fa.onsubmit=e=>{e.preventDefault();const f=new FormData(fa);const at=GEO||(selected&&byId[selected])||{lat:35.6938,lng:139.7034};addCustom({n:String(f.get("n")).trim(),cat:f.get("cat"),addr:String(f.get("addr")||"").trim(),note:String(f.get("note")||"").trim(),lat:at.lat,lng:at.lng,by:ME||null,at:Date.now()});fa.reset();};
   const fe=v.querySelector("[data-addexp]");if(fe)fe.onsubmit=e=>{e.preventDefault();const f=new FormData(fe);const a=parseInt(String(f.get("amt")).replace(/\D/g,""),10);if(!a)return;addExpense({amt:a,label:String(f.get("label")||"").trim(),day,by:ME||null,at:Date.now()});fe.reset();};
   v.querySelectorAll("[data-delexp]").forEach(b=>b.onclick=()=>delExpense(b.dataset.delexp));
@@ -1844,7 +1851,7 @@ function matchQ(p){if(!QUERY)return true;const j=JA[p.id]||{};const hay=norm([p.
 (function(){let mv=lsGet("tk-mv","map");const apply=()=>{document.body.classList.toggle("listmode",mv==="list");document.querySelectorAll("[data-mv]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mv===mv));if(mv==="map")requestAnimationFrame(()=>{measure();scheduleLayout();});};
   document.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{mv=b.dataset.mv;lsSet("tk-mv",mv);apply();});apply();})();
 // ---------- refresh everything that shows shared state
-var rfQ=false;function refreshAll(){if(rfQ)return;rfQ=true;requestAnimationFrame(()=>{rfQ=false;try{render();}catch(e){}try{rebuildDays();}catch(e){}try{renderNow();}catch(e){}try{renderTrain();}catch(e){}
+var rfQ=false;function refreshAll(){if(rfQ)return;rfQ=true;requestAnimationFrame(()=>{rfQ=false;try{render();}catch(e){}try{rebuildDays();}catch(e){}try{renderNow();}catch(e){}try{renderTop();}catch(e){}try{renderTrain();}catch(e){}
   if(sheetId&&!sheet.hidden){const ae=document.activeElement;if(!(ae&&sheetBody.contains(ae)&&ae.tagName==="TEXTAREA")){const sc=sheetBody.scrollTop;sheetBody.innerHTML=cardHtml(byId[sheetId]);wireCard(sheetBody);sheetBody.scrollTop=sc;}}});}
 setInterval(()=>{renderNow();renderTrain();},60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden){REFc=null;renderNow();renderTrain();}});
@@ -1978,7 +1985,7 @@ function setMapFS(on){const box=document.querySelector(".mapbox");if(!box)return
 (function(){const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js";s.async=true;s.onload=()=>{try{initGL();}catch(e){reportErr(e);}};document.head.appendChild(s);})();
 
 // ---------- tabs
-function showTab(id){if(id==="now"){setTimeout(()=>{try{renderNow()}catch(e){}},0);}if(id!=="now"&&typeof closeSheet==="function"&&sheetId&&id!=="map")closeSheet();if(id==="map"&&typeof measure==="function")requestAnimationFrame(()=>{const a=ASPECT;measure();if(Math.abs(a-ASPECT)>0.01)resetVB();});document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="view-"+id);try{localStorage.setItem("tk-tab",id)}catch(e){}}
+function showTab(id){if(id==="now"){setTimeout(()=>{try{renderNow()}catch(e){}},0);}if(id==="top"){setTimeout(()=>{try{renderTop()}catch(e){}},0);}if(id!=="now"&&typeof closeSheet==="function"&&sheetId&&id!=="map")closeSheet();if(id==="map"&&typeof measure==="function")requestAnimationFrame(()=>{const a=ASPECT;measure();if(Math.abs(a-ASPECT)>0.01)resetVB();});document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));document.querySelectorAll("section.view").forEach(s=>s.hidden=s.id!=="view-"+id);try{localStorage.setItem("tk-tab",id)}catch(e){}}
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 let tab="map";try{tab=localStorage.getItem("tk-tab")||"map"}catch(e){}
 if(tripDayNow()&&tab!=="now"){const last=Number((()=>{try{return localStorage.getItem("tk-tabt")}catch(e){return 0}})()||0);if(Date.now()-last>3*3600e3)tab="now";}
