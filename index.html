@@ -783,7 +783,7 @@ body.immap #detail .card.sel{animation:fin .22s ease-out}
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">Yatoni &amp; Mariana · octobre 2026 · 1 CHF ≈ 190 JPY (BCE, 14 oct.)</div>
+  <div class="eyebrow">Yatoni &amp; Mariana · octobre 2026 · 1 CHF ≈ 191,5 JPY (21 oct.)</div>
   <h1>Tokyo 15–25</h1>
   <p class="lede">Toute la liste, avec des adresses vérifiées, les horaires, les expos en cours et les prix en yens et en francs. Les pins de la carte s'allument par catégorie ou par jour ; chaque fiche ouvre Google Maps pour l'itinéraire et les photos. Rien n'est réservé : ce sont des pistes, pas des décisions.</p>
   <div class="bases"><span>Base 1 · <b>Araiyakushi-mae</b> (Kamitakada, Nakano-ku) · jeu. 15 → lun. 19, 10 h</span><span>Base 2 · <b>Nishi-Waseda</b> (Booking) · lun. 19 → dim. 25</span><span>Taxe détaxée au comptoir jusqu'au 31 oct. · passeport · min. ¥5 000</span></div>
@@ -797,7 +797,7 @@ body.immap #detail .card.sel{animation:fin .22s ease-out}
   <button role="tab" aria-selected="false" data-tab="days">Jour par jour</button>
   <button role="tab" aria-selected="false" data-tab="list">La liste</button>
   <button role="tab" aria-selected="false" data-tab="jp">Japonais</button>
-  <button role="tab" aria-selected="false" data-tab="prac">Pratique</button>
+  <button role="tab" aria-selected="false" data-tab="prac">¥ → CHF</button>
 </nav>
 
 <section class="view" id="view-now" role="tabpanel" hidden></section>
@@ -849,7 +849,7 @@ body.immap #detail .card.sel{animation:fin .22s ease-out}
 <div class="taxi" id="taxi" hidden role="dialog" aria-label="Adresse pour le chauffeur"></div>
 <script>
 window.V2CP=(function(){const F=[["repas","food","cafes","the","dessert","bars"],["vintage","bottes","design","lampes","cadeaux","fleurs","electro","jeux","manga","livres","estampes"],["musees","archi","quartier","nature","curio","souterr","folk","cine","son","sento","base"],["salon"],["love","libertin","hentai","adulte"]];const o={};F.forEach((l,i)=>{o["f"+i]=["+",["case",["in",["get","cat"],["literal",l]],1,0]];});return o;})();
-const FX=190; // JPY per CHF
+const FX=191.5; // JPY per CHF
 const CATS={
  design:{n:"Design & mobilier",c:"var(--c-design)"},
  lampes:{n:"Lampes",c:"var(--c-lampes)"},
@@ -2133,7 +2133,7 @@ function buildPrac(){
   const rows=ipads.map(r=>{const tf=chf(r[2]);const sav=r[3]-tf;const net=Math.round(r[3]-tf*1.02*1.081);return `<tr><td>${r[0]}</td><td class="n">${fmtY(r[1])}</td><td class="n">${fmtY(r[2])}</td><td class="n">${tf}</td><td class="n">${r[3]}</td><td class="n">${sav}</td><td class="n">${net}</td></tr>`;}).join("");
   document.getElementById("prac").innerHTML=`
   <div class="card"><div class="eyebrow">Transports</div><h3>Suica ou Pasmo, et deux lignes à retenir</h3><p>Une carte Suica ou Pasmo (ou celle de votre téléphone) passe partout : métro, JR, Seibu, bus, konbini. Un trajet coûte ¥180 à 330. Le Tokyo Subway Ticket (24 h ¥800, 48 h ¥1 200, 72 h ¥1 500, à vérifier sur place) couvre le métro Tokyo Metro et Toei, mais pas la JR ni la Seibu : rentable les jours à 4 trajets de métro ou plus (16, 21, 22 oct.).</p><p><b>Jusqu'au 19</b> : Araiyakushi-mae est sur la ligne Seibu Shinjuku. Seibu-Shinjuku en 15 min (Golden Gai à 5 min à pied), Takadanobaba en 3 stations pour la Yamanote et la Tozai. <b>À partir du 19</b> : Nishi-Waseda est entre les stations Waseda (Tozai), Nishi-Waseda (Fukutoshin) et Takadanobaba (Yamanote, Tozai, Seibu), toutes à 8–12 min à pied.</p><p>Premiers trains vers 5 h, derniers vers minuit à 0:30 selon les lignes : vérifier dans Google Maps avant de rester tard à Golden Gai. Taxi Golden Gai → Nishi-Waseda ≈ ¥2 000 à 2 500 la nuit. Les temps de trajet affichés entre les étapes du planning sont des estimations à vol d'oiseau, à confirmer dans Maps.</p></div>
-  <div class="card"><div class="eyebrow">Change et détaxe</div><h3>1 CHF ≈ 190 JPY</h3><p>Taux BCE du 14 octobre (1 JPY = 0,00526 CHF). Votre carte prend 1 à 2 % de plus. Tous les CHF de ce guide sont arrondis sur cette base.</p><p>Jusqu'au 31 octobre, l'ancien système s'applique : passeport à la caisse, achat d'au moins ¥5 000 HT dans le même magasin le même jour, et les 10 % de taxe sont retirés immédiatement. Il faut emporter les articles avec soi (plus d'expédition depuis avril 2025). À partir du 1er novembre, ce sera un remboursement à l'aéroport, sans vous concerner.</p><p>Retour en Suisse : franchise de 300 CHF par personne ; au-delà, TVA de 8,1 % sur la valeur totale de l'article (pas seulement l'excédent), et les franchises de deux personnes ne se cumulent pas sur un seul objet. Un iPad passe donc toujours la barre ; une manette non.</p></div>
+  <div class="card"><div class="eyebrow">Change et détaxe</div><h3>1 CHF ≈ 191,5 JPY</h3><p>Taux du 21 octobre (1 JPY = 0,00522 CHF). Votre carte prend 1 à 2 % de plus. Tous les CHF de ce guide sont arrondis sur cette base.</p><p>Jusqu'au 31 octobre, l'ancien système s'applique : passeport à la caisse, achat d'au moins ¥5 000 HT dans le même magasin le même jour, et les 10 % de taxe sont retirés immédiatement. Il faut emporter les articles avec soi (plus d'expédition depuis avril 2025). À partir du 1er novembre, ce sera un remboursement à l'aéroport, sans vous concerner.</p><p>Retour en Suisse : franchise de 300 CHF par personne ; au-delà, TVA de 8,1 % sur la valeur totale de l'article (pas seulement l'excédent), et les franchises de deux personnes ne se cumulent pas sur un seul objet. Un iPad passe donc toujours la barre ; une manette non.</p></div>
   <div class="card"><div class="eyebrow">iPad · Apple Japon vs Apple Suisse, modèles Wi-Fi, prix du 15 octobre</div>
   <div class="tablewrap"><table><thead><tr><th>Modèle</th><th>Prix JP</th><th>Détaxé</th><th>Détaxé CHF</th><th>Prix CH</th><th>Écart brut</th><th>Après TVA suisse + carte</th></tr></thead><tbody>${rows}</tbody></table></div>
   <p>Verdict : l'iPad mini 128 Go est la seule affaire nette (≈ 73 CHF). Les autres gains fondent après la TVA suisse. Les versions cellulaires coûtent ¥25 000 de plus au Japon (Pro : ¥35 000) contre 150 CHF (Pro : 200), un peu plus avantageux.</p>
@@ -2189,13 +2189,13 @@ const ICONS={
  salon:'<circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="M8.5 8.5 20 18M8.5 15.5 20 6"/>',
  now:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',map:'<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/>',
  days:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',list:'<path d="M9 6h12M9 12h12M9 18h12"/><path d="m3 6 1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17"/>',
- prac:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
+ prac:'<path d="M6 4l6 8 6-8M12 12v8M7.5 13.5h9M7.5 17h9"/>',
  top:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>'
 };
 function icon(k){return `<span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24">${ICONS[k]||ICONS.quartier}</svg></span>`;}
 function cicon(p){return `<span class="cicon" style="--cc:${CATS[p.cat].c}">${icon(p.cat)}</span>`;}
 // tab icons
-document.querySelectorAll("nav.tabs button").forEach(b=>{const k=b.dataset.tab;const short={now:"Maintenant",top:"Top",map:"Carte",days:"Jours",list:"Liste",prac:"Pratique",jp:"Japonais"}[k]||b.textContent;b.innerHTML=`<span class="ti">${icon(k)}</span><span class="tl2">${isPhone()?short:b.textContent}</span>`;});
+document.querySelectorAll("nav.tabs button").forEach(b=>{const k=b.dataset.tab;const short={now:"Maintenant",top:"Top",map:"Carte",days:"Jours",list:"Liste",prac:"Change",jp:"Japonais"}[k]||b.textContent;b.innerHTML=`<span class="ti">${icon(k)}</span><span class="tl2">${isPhone()?short:b.textContent}</span>`;});
 
 // ---------- toast
 const toastEl=document.createElement("div");toastEl.className="toast";toastEl.setAttribute("role","status");document.body.appendChild(toastEl);
@@ -2734,7 +2734,7 @@ const H=document.querySelector("header");
 if(H){const bases=H.querySelector(".bases");H.className="v2";H.innerHTML=`<div class="hrow"><h1 class="wm">Tokyo</h1><span class="hsub">15 → 25 oct. · Yatoni et Mariana</span></div><div class="metro"></div>`;
   const pr=document.getElementById("view-prac");if(bases&&pr){const c=document.createElement("div");c.className="card";c.innerHTML=`<div class="eyebrow">Nos bases</div>`;c.appendChild(bases);pr.prepend(c);}}
 // tabs: Carte, Envies (+ liste), Japonais, Pratique
-const NAVT={map:"Carte",top:"Envies",jp:"Japonais",prac:"Pratique"};
+const NAVT={map:"Carte",top:"Envies",jp:"Japonais",prac:"Change"};
 document.querySelectorAll("nav.tabs button").forEach(b=>{const k=b.dataset.tab;if(!NAVT[k]){b.hidden=true;return;}const sp=b.querySelector(".tl2");if(sp)sp.textContent=NAVT[k];else b.textContent=NAVT[k];});
 const nav=document.querySelector("nav.tabs");if(nav){const order=["map","top","jp","prac"];order.forEach(k=>{const b=nav.querySelector(`[data-tab="${k}"]`);if(b)nav.appendChild(b);});}
 const vl=document.getElementById("view-list");if(vl){const l=vl.querySelector(".lede");if(l)l.textContent="Toute la liste d'origine, par thème. Les cases cochées restent sur ce téléphone.";}
@@ -2898,7 +2898,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 89 · 21 oct. 19 h 30";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 90 · 21 oct. 19 h 50";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
@@ -2998,6 +2998,121 @@ document.addEventListener("click",e=>{const img=e.target.closest&&e.target.close
   const list=all.map(x=>({s:x.currentSrc||x.src,c:capOf(x)}));open(list,Math.max(0,all.indexOf(img)));},true);
 })();
 </script>
+<!--FXSTART-->
+<style>
+#fxc{display:grid;gap:12px;max-width:520px;margin:0 auto}
+#fxc .fx-box{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px;display:grid;gap:4px}
+#fxc .fx-lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg3);display:flex;justify-content:space-between;align-items:center}
+#fxc .fx-in{font-family:var(--font-display);font-weight:800;font-size:clamp(38px,11vw,54px);line-height:1.05;letter-spacing:-.02em;color:var(--fg);min-height:1.1em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#fxc .fx-in .expr{display:block;font-family:var(--font-mono);font-weight:400;font-size:14px;letter-spacing:0;color:var(--fg2);min-height:1.2em}
+#fxc .fx-in .cur{color:var(--fg3);font-weight:700;margin-right:4px}
+#fxc .fx-in.empty{color:var(--fg3)}
+#fxc .fx-out{font-family:var(--font-display);font-weight:800;font-size:clamp(34px,10vw,48px);line-height:1.05;color:var(--glow);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#fxc .fx-out .cur{font-size:.55em;margin-left:6px;color:var(--fg2)}
+#fxc .fx-sub{font-size:13.5px;color:var(--fg2);display:grid;gap:2px;margin-top:4px}
+#fxc .fx-sub b{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}
+#fxc .fx-swap{border:1px solid var(--line);background:var(--bg3);color:var(--fg);border-radius:999px;font:inherit;font-size:13px;font-weight:600;padding:6px 12px;cursor:pointer;letter-spacing:0;text-transform:none;font-family:var(--font-body)}
+#fxc .fx-quick{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+#fxc .fx-quick::-webkit-scrollbar{display:none}
+#fxc .fx-quick button{flex:0 0 auto;border:1px solid var(--line);background:var(--bg2);color:var(--fg);border-radius:999px;font-family:var(--font-mono);font-size:13px;padding:8px 12px;cursor:pointer}
+#fxc .fx-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#fxc .fx-pad button{min-height:58px;border-radius:14px;border:1px solid var(--line);background:var(--bg2);color:var(--fg);font-family:var(--font-display);font-size:24px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#fxc .fx-pad button:active{background:var(--bg3);transform:scale(.97)}
+#fxc .fx-pad button.op{color:var(--glow);background:color-mix(in srgb,var(--glow) 10%,var(--bg2))}
+#fxc .fx-pad button.cl{color:var(--bad);font-size:18px}
+#fxc .fx-pad .sm{font-size:17px}
+#fxc .fx-rate{font-family:var(--font-mono);font-size:12px;color:var(--fg3);text-align:center;line-height:1.5}
+#fxc .fx-rate b{color:var(--fg2);font-weight:500}
+#fxc .fx-tbl{background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#fxc .fx-tbl h4{margin:0;padding:10px 14px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--fg3);border-bottom:1px solid var(--line)}
+#fxc .fx-tbl .g{display:grid;grid-template-columns:1fr 1fr}
+#fxc .fx-tbl button{display:flex;justify-content:space-between;gap:8px;padding:9px 14px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--fg);font-family:var(--font-mono);font-size:13.5px;cursor:pointer;text-align:left;font-variant-numeric:tabular-nums}
+#fxc .fx-tbl button:nth-child(odd){border-right:1px solid var(--line)}
+#fxc .fx-tbl button span:last-child{color:var(--glow)}
+#fxold{margin-top:22px;border-top:1px solid var(--line);padding-top:10px}
+#fxold>summary{cursor:pointer;font-size:14px;color:var(--fg2);padding:8px 0;list-style:none}
+#fxold>summary::before{content:"▸ "}
+#fxold[open]>summary::before{content:"▾ "}
+#fxold .prac{margin-top:10px}
+</style>
+<script>
+(function(){
+const V=document.getElementById("view-prac");if(!V)return;
+const LS="tk-fx";let RATE=191.53,RDATE="21 oct.",RSRC="marché, 21 oct. 2026";
+try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s&&s.r>100&&s.r<300&&s.t>Date.parse("2026-10-21")){RATE=s.r;RDATE=s.d;RSRC=s.src||"BCE";}}catch(e){}
+const old=document.createElement("details");old.id="fxold";old.innerHTML="<summary>Autres infos (transports, détaxe, fermetures, crédits)</summary>";
+const stamp=document.getElementById("vstamp");
+[...V.children].forEach(c=>{if(c!==stamp)old.appendChild(c);});
+const W=document.createElement("div");W.id="fxc";
+W.innerHTML=`<div class="fx-box">
+  <div class="fx-lbl"><span id="fxl1">Yens</span><button type="button" class="fx-swap" id="fxswap">⇅ Inverser</button></div>
+  <div class="fx-in empty" id="fxin" aria-live="polite"></div>
+</div>
+<div class="fx-box">
+  <div class="fx-lbl"><span id="fxl2">Francs suisses</span></div>
+  <div class="fx-out" id="fxout">0</div>
+  <div class="fx-sub" id="fxsub"></div>
+</div>
+<div class="fx-quick" id="fxq"></div>
+<div class="fx-pad" id="fxpad">
+  <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button class="cl" data-k="C">C</button>
+  <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button class="op" data-k="-">−</button>
+  <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button class="op" data-k="+">+</button>
+  <button class="sm" data-k="000">000</button><button data-k="0">0</button><button data-k="." id="fxdot">.</button><button class="op" data-k="B" aria-label="Effacer">⌫</button>
+</div>
+<div class="fx-rate" id="fxrate"></div>
+<div class="fx-tbl"><h4 id="fxth">Repères</h4><div class="g" id="fxtbl"></div></div>`;
+V.prepend(W);V.insertBefore(old,stamp||null);
+let dir="y",expr="";
+const $=id=>document.getElementById(id);
+const sp=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g," ");
+function fmt(n,dec){if(!isFinite(n))return "0";const neg=n<0;n=Math.abs(n);let s=n.toFixed(dec);let [a,b]=s.split(".");a=sp(a);return (neg?"−":"")+a+(b?"."+b:"");}
+function chfF(n){return fmt(n,n>=1000?0:2);}
+function yenF(n){return fmt(Math.round(n),0);}
+function evalE(e){const parts=e.match(/[+-]?[^+-]+/g);if(!parts)return 0;let t=0;for(const p of parts){const v=parseFloat(p);if(!isNaN(v))t+=v;}return t;}
+function draw(){
+  const v=evalE(expr);const hasOp=/[+-]/.test(expr.replace(/^-/,""));
+  const shown=expr?expr.replace(/-/g," − ").replace(/\+/g," + ").replace(/\d+/g,m=>sp(m)):"0";
+  $("fxin").className="fx-in"+(expr?"":" empty");
+  $("fxin").innerHTML=`<span class="expr">${hasOp?"= "+(dir==="y"?"¥"+yenF(v):fmt(v,2)+" CHF"):""}</span><span class="cur">${dir==="y"?"¥":""}</span>${shown}${dir==="c"?'<span class="cur" style="margin-left:6px">CHF</span>':""}`;
+  $("fxl1").textContent=dir==="y"?"Yens":"Francs suisses";$("fxl2").textContent=dir==="y"?"Francs suisses":"Yens";
+  $("fxdot").textContent=dir==="y"?"00":".";$("fxdot").classList.toggle("sm",dir==="y");
+  const sub=$("fxsub");
+  if(dir==="y"){const c=v/RATE;$("fxout").innerHTML=`${chfF(c)}<span class="cur">CHF</span>`;
+    let h=v>0?`<span>Payé par carte (+1 à 2 %) : <b>${chfF(c*1.01)} à ${chfF(c*1.02)} CHF</b></span>`:"";
+    if(v>=5500)h+=`<span>Si détaxé (−10 %, prix TTC ≥ ¥5 500 dans un même magasin) : <b>¥${yenF(v/1.1)} ≈ ${chfF(c/1.1)} CHF</b></span>`;
+    sub.innerHTML=h;}
+  else{const y=v*RATE;$("fxout").innerHTML=`¥${yenF(y)}`;sub.innerHTML=v>0?`<span>Frais de carte compris (+1,5 %) : <b>¥${yenF(y/1.015)}</b> à dépenser pour ${fmt(v,2)} CHF</span>`:"";}
+  $("fxrate").innerHTML=`<b>1 CHF = ${fmt(RATE,2)} ¥</b> · ¥1 000 = ${fmt(1000/RATE,2)} CHF<br>Taux ${RSRC}`;
+}
+function quick(){const q=dir==="y"?[500,1000,3000,5000,10000,30000]:[5,10,20,50,100,200];
+  $("fxq").innerHTML=q.map(n=>`<button type="button" data-v="${n}">${dir==="y"?"¥"+sp(n):n+" CHF"}</button>`).join("");
+  $("fxq").querySelectorAll("button").forEach(b=>b.onclick=()=>{const n=b.dataset.v;if(/[+-]$/.test(expr))expr+=n;else expr=n;draw();});
+  const t=dir==="y"?[100,300,500,1000,1500,2000,3000,5000,10000,20000,50000,100000]:[1,2,5,10,20,30,50,100,150,200,500,1000];
+  $("fxth").textContent=dir==="y"?"Repères yens → francs":"Repères francs → yens";
+  $("fxtbl").innerHTML=t.map(n=>dir==="y"?`<button type="button" data-v="${n}"><span>¥${sp(n)}</span><span>${chfF(n/RATE)}</span></button>`:`<button type="button" data-v="${n}"><span>${n} CHF</span><span>¥${yenF(n*RATE)}</span></button>`).join("");
+  $("fxtbl").querySelectorAll("button").forEach(b=>b.onclick=()=>{expr=b.dataset.v;draw();window.scrollTo({top:0,behavior:"smooth"});});}
+function key(k){
+  if(k==="C"){expr="";}
+  else if(k==="B"){expr=expr.slice(0,-1);}
+  else if(k==="+"||k==="-"){if(!expr&&k==="+")return;expr=expr.replace(/[+-]$/,"")+k;}
+  else if(k==="."&&dir==="y"){const last=(expr.match(/[^+-]*$/)||[""])[0];if(!last||last.length>=8)return;expr+="00";}
+  else if(k==="."){const last=(expr.match(/[^+-]*$/)||[""])[0];if(dir!=="c"||last.includes("."))return;expr+=last?".":"0.";}
+  else{const last=(expr.match(/[^+-]*$/)||[""])[0];if(last.replace(".","").length>=9)return;if(last==="0"&&k!==".")expr=expr.slice(0,-1);expr+=k;if(/^0+(\d)/.test(expr))expr=expr.replace(/^0+(?=\d)/,"");}
+  draw();}
+$("fxpad").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>key(b.dataset.k)));
+$("fxswap").onclick=()=>{dir=dir==="y"?"c":"y";expr="";quick();draw();};
+document.addEventListener("keydown",e=>{if(V.hidden||e.target.closest("input,textarea,select"))return;const k=e.key;
+  if(/^[0-9]$/.test(k))key(k);else if(k==="+"||k==="-"||k===".")key(k);else if(k===","){key(".");}else if(k==="Backspace")key("B");else if(k==="Escape")key("C");else return;e.preventDefault();});
+quick();draw();
+// live rate: works where the network allows (installed app), silent otherwise
+(async()=>{try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),6000);
+  const r=await fetch("https://api.frankfurter.app/latest?from=CHF&to=JPY",{signal:ctl.signal});const j=await r.json();const v=j&&j.rates&&j.rates.JPY;
+  if(v>100&&v<300){RATE=v;const d=new Date(j.date+"T12:00:00");RDATE=d.toLocaleDateString("fr-CH",{day:"numeric",month:"short"});RSRC="BCE du "+RDATE+", mis à jour automatiquement";
+    try{localStorage.setItem(LS,JSON.stringify({r:v,d:RDATE,src:RSRC,t:Date.now()}))}catch(e){}quick();draw();}}catch(e){}})();
+})();
+</script>
+<!--FXEND-->
 
 <script>
 (function(){
