@@ -597,7 +597,7 @@ body.immax .mtop{top:calc(10px + env(safe-area-inset-top,0px))}
 
 /* tiroir bas (liste + fiche) */
 body.immap .maplayout{display:block!important}
-body.immap .cardcol{position:fixed!important;left:0;right:0;bottom:var(--nav,64px);height:var(--dh,96px);z-index:20;background:var(--bg);border-radius:24px 24px 0 0;box-shadow:0 -8px 30px rgba(20,28,60,.18);display:flex!important;flex-direction:column;transition:height .3s cubic-bezier(.2,.8,.2,1);padding:0!important;margin:0!important;max-width:none!important;width:auto!important}
+body.immap .cardcol{position:fixed!important;left:0;right:0;bottom:var(--nav,64px);height:var(--dh,96px);z-index:20;background:var(--bg);border-radius:24px 24px 0 0;box-shadow:0 -8px 30px rgba(20,28,60,.18);display:flex!important;flex-direction:column;transition:height .3s cubic-bezier(.2,.8,.2,1),top .3s cubic-bezier(.2,.8,.2,1);padding:0!important;margin:0!important;max-width:none!important;width:auto!important}
 body.immax .cardcol{bottom:0}
 body.immap .cardcol.drag{transition:none}
 .dgrab{display:none}
@@ -713,6 +713,15 @@ body.immap #detail .card.sel{padding:0 0 14px!important}
 .plinks .pchip{background:var(--bg2)!important;color:var(--fg)!important;text-decoration:none!important;padding:4px 11px 4px 4px!important;border-radius:999px!important;font-weight:700!important}
 .card .cat::before,.card.sel .fhd .cat::before{display:none!important}
 body.immap.dh-peek .dscroll{visibility:hidden}
+/* iOS (app écran d'accueil) : on positionne depuis le haut avec la vraie hauteur d'écran */
+@media (max-width:640px){
+  nav.tabs{top:calc(var(--vh,100dvh) - 62px - env(safe-area-inset-bottom,0px))!important;bottom:auto!important}
+  body.immap .mapbox{bottom:auto!important;height:calc(var(--vh,100dvh) - var(--hdr,64px) - 62px - env(safe-area-inset-bottom,0px))!important}
+  body.immax .mapbox{height:var(--vh,100dvh)!important}
+  body.immap .cardcol{bottom:auto!important;top:calc(var(--vh,100dvh) - 62px - env(safe-area-inset-bottom,0px) - var(--dh,78px))!important}
+  body.immax .cardcol{top:calc(var(--vh,100dvh) - var(--dh,78px))!important}
+  body{min-height:var(--vh,100dvh)}
+}
 
 /*V2END*/
 </style>
@@ -2626,9 +2635,9 @@ function placeSearch(){const ms=mtop.querySelector(".msearch");const home=docume
 const grab=document.createElement("div");grab.className="dgrab";grab.innerHTML=`<div class="pill"></div><div class="dt"><span class="dtt">Autour de vous</span><small class="dtn"></small><button type="button" class="dl">Voir la liste</button></div>`;
 const scr=document.createElement("div");scr.className="dscroll";
 while(col.firstChild)scr.appendChild(col.firstChild);col.appendChild(grab);col.appendChild(scr);
-function avail(){return Math.max(240,window.innerHeight-(document.body.classList.contains("immax")?0:(hdrH()+navH())));}
+function avail(){return Math.max(240,(window.__vh||window.innerHeight)-(document.body.classList.contains("immax")?0:(hdrH()+navH())));}
 function hdrH(){const h=document.querySelector("header");return h?h.getBoundingClientRect().bottom:60;}
-function navH(){const n=document.querySelector("nav.tabs");return n?Math.max(0,window.innerHeight-n.getBoundingClientRect().top):60;}
+function navH(){const n=document.querySelector("nav.tabs");return n?n.getBoundingClientRect().height:60;}
 function hFor(s){const a=avail();if(s==="peek")return 78;if(s==="half")return Math.round(a*.52);const mt=mtop.getBoundingClientRect(),bx=box.getBoundingClientRect();const used=mt.height?(mt.bottom-bx.top+8):74;return Math.round(a-used);}
 function setDH(s,noanim){if(s==="peek"&&selected&&window.closeFiche){DH=s;closeFiche(true);}DH=s;document.body.classList.toggle("dh-peek",s==="peek");const h=hFor(s);document.documentElement.style.setProperty("--dh",h+"px");document.documentElement.style.setProperty("--peek",(s==="peek"?78:Math.min(h,hFor("half")))+"px");
   grab.querySelector(".dl").textContent=s==="full"?"Réduire":(selected&&s!=="peek"?"Liste":"Voir la liste");}
@@ -2661,7 +2670,7 @@ const _focus=focusDetail;focusDetail=function(){if(document.body.classList.conta
 const _open=openSheet;openSheet=function(id){if(document.body.classList.contains("immap")){select(id,false);focusDetail();return;}return _open(id);};
 window.closeFiche=function(keep){selected=null;try{Object.values(pinEls).forEach(g=>g.classList.remove("active"));}catch(e){}renderDetail();try{GLsync();}catch(e){}if(!keep)setDH("peek");};
 // fullscreen button -> hide header/nav too
-const _fs=setMapFS;setMapFS=function(on){if(document.body.classList.contains("immap")){document.body.classList.toggle("immax",on);const z=document.getElementById("zfs");if(z)z.setAttribute("aria-pressed",on);vars();setTimeout(()=>{try{GL.map.resize()}catch(e){}},320);return;}return _fs(on);};
+const _fs=setMapFS;setMapFS=function(on){if(document.body.classList.contains("immap")){on=!document.body.classList.contains("immax");document.body.classList.toggle("immax",on);const z=document.getElementById("zfs");if(z){z.setAttribute("aria-pressed",on);z.innerHTML=on?"✕":"⛶";z.setAttribute("aria-label",on?"Quitter le plein écran":"Carte en plein écran");}vars();setTimeout(()=>{try{GL.map.resize()}catch(e){}},320);return;}return _fs(on);};
 
 // ---------- feuille de filtres
 const fbg=document.createElement("div");fbg.className="fsh-bg";fbg.hidden=true;const fs=document.createElement("div");fs.className="fsh";fs.hidden=true;fs.setAttribute("role","dialog");fs.setAttribute("aria-label","Filtres");
@@ -2727,9 +2736,10 @@ prioHtml=function(compact){return `<div class="near">${PRIO.map((p,i)=>{const d=
   ${compact||!p[1]?"":`<details class="pdet"><summary>Détails</summary><p>${esc(p[1])}</p></details>`}</span></div>`}).join("")}</div>`;};
 try{renderTop();}catch(e){}
 // mesures en direct (barre d'état, encoche, police chargée)
-function measure2(){const r=document.documentElement.style;const h=document.querySelector("header"),n=document.querySelector("nav.tabs");
+function vh(){let v=window.innerHeight;try{if(navigator.standalone||matchMedia("(display-mode: standalone)").matches){const port=window.innerHeight>=window.innerWidth;const sh=port?Math.max(screen.height,screen.width):Math.min(screen.height,screen.width);if(sh>v&&sh-v<140)v=sh;}}catch(e){}window.__vh=v;return v;}
+function measure2(){const r=document.documentElement.style;r.setProperty("--vh",vh()+"px");const h=document.querySelector("header"),n=document.querySelector("nav.tabs");
   if(h)r.setProperty("--hdr",Math.round(h.getBoundingClientRect().bottom)+"px");
-  if(n){const t=n.getBoundingClientRect().top;r.setProperty("--nav",Math.max(0,Math.round(window.innerHeight-t))+"px");}
+  if(n){r.setProperty("--nav",Math.round(n.getBoundingClientRect().height)+"px");}
   try{if(GL.map)GL.map.resize();}catch(e){}}
 window.addEventListener("resize",measure2);window.addEventListener("orientationchange",()=>setTimeout(measure2,300));window.addEventListener("pageshow",measure2);
 if(window.visualViewport)visualViewport.addEventListener("resize",measure2);
