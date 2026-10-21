@@ -1,5 +1,5 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Tokyo 15–25</title>
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#11172A" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -722,6 +722,16 @@ body.immap.dh-peek .dscroll{visibility:hidden}
   body.immax .cardcol{top:calc(var(--vh,100dvh) - var(--dh,78px))!important}
   body{min-height:var(--vh,100dvh)}
 }
+/* onglets : icône centrée */
+nav.tabs button .ti{line-height:0;padding:0;box-sizing:border-box}
+nav.tabs button .ti svg{display:block;margin:0}
+nav.tabs button .tl2{display:block;line-height:1.2;margin-top:3px}
+/* pas de zoom de page au double tap, sauf sur la carte */
+html,body,button,a,.chip,.row,.card,.dgrab,.dscroll,nav.tabs,.mtop,.fsh,.sheet,.taxi{touch-action:manipulation}
+.mapbox .maplibregl-canvas-container,.mapbox canvas,#map{touch-action:none}
+/* filtres : sélection en grille */
+.fsh .seg.sel2{display:grid;grid-template-columns:1fr 1fr}
+.fsh .seg.sel2 button{text-align:center}
 
 /*V2END*/
 </style>
@@ -2656,6 +2666,8 @@ function upCount(){const n=P.filter(p=>{try{return visible(p)&&p.cat!=="base"}ca
   const nf=(activeCats.size<Object.keys(CATS).length?1:0)+(relFilter&&relFilter!=="star"?1:0)+(whenDay!=="now"?1:0);const bd=qs[2].querySelector(".badge");bd.hidden=!nf;bd.textContent=nf;}
 const _render=render;render=function(){_render();try{upCount();}catch(e){}};
 mtop.querySelector('[data-q="open"]').onclick=()=>toggleOpenOnly();
+q.addEventListener("input",()=>{if(!document.body.classList.contains("immap"))return;if(q.value.trim()){if(selected)closeFiche(true);if(DH==="peek")setDH("full");scr.scrollTo({top:0});}});
+q.addEventListener("focus",()=>{if(document.body.classList.contains("immap")&&DH==="peek"&&!selected)setDH("half");});
 mtop.querySelector('[data-q="star"]').onclick=()=>{relFilter=relFilter==="star"?null:"star";document.querySelectorAll("#relfilters .chip").forEach(x=>x.setAttribute("aria-pressed",(x.dataset.rel||null)===relFilter));render();};
 mtop.querySelector('[data-q="list"]').onclick=()=>{if(selected)closeFiche(true);setDH("full");scr.scrollTo({top:0});};
 mtop.querySelector('[data-q="filt"]').onclick=()=>openFilters();
@@ -2680,7 +2692,7 @@ function fillFilters(){const n=P.filter(p=>{try{return visible(p)&&p.cat!=="base
   fs.innerHTML=`<div class="fh"><b>Filtres</b><button type="button" data-x aria-label="Fermer">✕</button></div><div class="fb">
   <h5>Quand</h5><div class="seg"><button type="button" data-w="now" aria-pressed="${whenDay==="now"}">Maintenant</button><button type="button" data-w="pick" aria-pressed="${whenDay!=="now"}">Un autre moment</button><button type="button" data-oo aria-pressed="${openOnly}">● Seulement ce qui est ouvert</button></div>
   <div class="when2" ${whenDay==="now"?"hidden":""}><select data-wd>${DAYS.filter(d=>d>=(tripDayNow()||15)).map(d=>`<option value="${d}" ${String(d)===String(whenDay)?"selected":""}>${DNAME[d]}. ${d} oct.</option>`).join("")}</select><input type="time" data-wt value="${whenTime}" step="900"></div>
-  <h5>Sélection</h5><div class="seg"><button type="button" data-r="" aria-pressed="${!relFilter}">Tout</button><button type="button" data-r="star" aria-pressed="${relFilter==="star"}">★ Nos envies</button><button type="button" data-r="sure" aria-pressed="${relFilter==="sure"}">Valeurs sûres</button><button type="button" data-r="gem" aria-pressed="${relFilter==="gem"}">Pépites</button></div>
+  <h5>Sélection</h5><div class="seg sel2"><button type="button" data-r="" aria-pressed="${!relFilter}">Tout</button><button type="button" data-r="star" aria-pressed="${relFilter==="star"}">★ Nos envies</button><button type="button" data-r="sure" aria-pressed="${relFilter==="sure"}">Valeurs sûres</button><button type="button" data-r="gem" aria-pressed="${relFilter==="gem"}">Pépites</button></div>
   <h5>Catégories<button type="button" data-all>${activeCats.size>=Object.keys(CATS).length?"Aucune":"Toutes"}</button></h5>${catsHtml()}
   </div><div class="ff"><button type="button" data-reset>Tout afficher</button><button type="button" class="go" data-go>Voir ${n} lieux</button></div>`;
   fs.querySelector("[data-x]").onclick=closeFilters;fs.querySelector("[data-go]").onclick=closeFilters;
@@ -2730,7 +2742,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 75 · 21 oct. 10 h 10";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 76 · 21 oct. 10 h 20";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
