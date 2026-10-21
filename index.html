@@ -733,6 +733,7 @@ html,body,button,a,.chip,.row,.card,.dgrab,.dscroll,nav.tabs,.mtop,.fsh,.sheet,.
 /* filtres : sélection en grille */
 .fsh .seg.sel2{display:grid;grid-template-columns:1fr 1fr}
 .fsh .seg.sel2 button{text-align:center}
+.fback{display:block;width:100%;margin:0 0 10px;border:0;border-radius:14px;background:var(--bg2);color:var(--fg);font-weight:800;font-size:15px;padding:12px;text-align:left}
 
 /*V2END*/
 </style>
@@ -2613,9 +2614,14 @@ window.rdHtml=rd;
 cicon=function(p){return `<span class="cicon v2">${rd(p.cat,"")}</span>`;};
 // fiche header
 const _card=cardHtml;
-cardHtml=function(p){let h=_card(p);return h.replace(/<div class="cat">[\s\S]*?<\/div>/,`<div class="fhd">${rd(p.cat,"lg")}<div class="cat">${esc(CATS[p.cat].n)}</div><button type="button" class="fx" data-fx aria-label="Fermer la fiche">×</button></div>`);};
+cardHtml=function(p){let h=_card(p);return h.replace(/<div class="cat">[\s\S]*?<\/div>/,`<div class="fhd">${rd(p.cat,"lg")}<div class="cat">${esc(CATS[p.cat].n)}</div><button type="button" class="fx" data-fx aria-label="Fermer la fiche">×</button></div>${window.BACK&&document.body.classList.contains("immap")?`<button type="button" class="fback" data-fback>← Retour à la liste</button>`:""}`);};
 const _wire=wireCard;
-wireCard=function(d){_wire(d);d.querySelectorAll("[data-fx]").forEach(b=>b.onclick=()=>closeFiche());};
+wireCard=function(d){_wire(d);d.querySelectorAll("[data-fx]").forEach(b=>b.onclick=()=>closeFiche());d.querySelectorAll("[data-fback]").forEach(b=>b.onclick=()=>backToList());};
+window.backToList=function(){const B=window.BACK;window.BACK=null;selected=null;try{Object.values(pinEls).forEach(g=>g.classList.remove("active"));}catch(e){}
+  if(B&&B.origin!==originKey){originKey=B.origin;try{localStorage.setItem("tk-origin",originKey)}catch(e){}const s=document.getElementById("origin");if(s)s.value=originKey;}
+  renderDetail();render();setDH("full");
+  try{if(B&&B.cam&&GL.ready)GL.map.easeTo({center:B.cam.c,zoom:B.cam.z,duration:500});}catch(e){}
+  requestAnimationFrame(()=>{scr.scrollTo({top:B?B.scroll:0});});};
 // no planning: origin = GPS, otherwise the selected "Je suis à", otherwise the apartment
 originOrEst=function(){const o=getOrigin();if(o)return o;if(typeof GEO!=="undefined"&&GEO)return GEO;const b=byId.b2;return b?{n:"l'appart",lat:b.lat,lng:b.lng}:null;};
 try{const s=document.getElementById("origin");if(s&&s.options[0]&&s.options[0].value==="")s.options[0].textContent="Ma position, sinon l'appart";}catch(e){}
@@ -2679,7 +2685,10 @@ function easeToPlace(p){if(!p||!p.lat)return;if(typeof GL!=="undefined"&&GL.read
     m.easeTo({center:[p.lng,p.lat],zoom:Math.max(m.getZoom(),15.2),offset:[0,Math.round((pad.top-pad.bottom)/2)],duration:560,easing:t=>1-Math.pow(1-t,3)});return;}
   const [x,y]=PXY[p.id]||[];if(x!=null){const w=Math.min(vb.w,200);flyTo(x,y+w*.18,w);}}
 const _center=centerOn;centerOn=function(p){if(document.body.classList.contains("immap"))return easeToPlace(p);return _center(p);};
-const _focus=focusDetail;focusDetail=function(){if(document.body.classList.contains("immap")){const p=byId[selected];setDH("half");scr.scrollTo({top:0,behavior:"smooth"});easeToPlace(p);return;}return _focus();};
+window.BACK=null;scr.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#placelist .row"))window.__preScroll=scr.scrollTop;},true);
+const _focus=focusDetail;focusDetail=function(){if(document.body.classList.contains("immap")){const p=byId[selected];
+    if(DH==="full"){let cam=null;try{if(GL.ready){const c=GL.map.getCenter();cam={c:[c.lng,c.lat],z:GL.map.getZoom()};}}catch(e){}window.BACK={cam,scroll:(window.__preScroll!=null?window.__preScroll:scr.scrollTop),origin:originKey,q:q.value};window.__preScroll=null;}else window.BACK=null;DK="";renderDetail();
+    setDH("half");scr.scrollTo({top:0,behavior:"smooth"});easeToPlace(p);return;}return _focus();};
 const _open=openSheet;openSheet=function(id){if(document.body.classList.contains("immap")){select(id,false);focusDetail();return;}return _open(id);};
 window.closeFiche=function(keep){selected=null;try{Object.values(pinEls).forEach(g=>g.classList.remove("active"));}catch(e){}renderDetail();try{GLsync();}catch(e){}if(!keep)setDH("peek");};
 // fullscreen button -> hide header/nav too
@@ -2743,7 +2752,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 78 · 21 oct. 10 h 30";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 79 · 21 oct. 12 h 45";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
