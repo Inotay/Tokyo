@@ -2479,7 +2479,7 @@ function glStyle(){const c=glCol();const W=(a)=>["interpolate",["exponential",1.
 function glC(cat){const v=CATS[cat].c;const m=/^var\((--[^)]+)\)$/.exec(v);if(!m)return v;return getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim()||"#888";}
 function glFeat(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:Object.assign({id:p.id,c:glC(p.cat),n:glShort(p.n),star:isStar(p.id)},extra||{})};}
 function glAddOverlay(){const m=GL.map,c=glCol();const fc={type:"FeatureCollection",features:[]};
-  m.addSource("route",{type:"geojson",data:fc});m.addSource("pl",{type:"geojson",data:fc,cluster:true,clusterRadius:24,clusterMaxZoom:14,clusterProperties:(window.V2CP||undefined)});m.addSource("fix",{type:"geojson",data:fc});m.addSource("me",{type:"geojson",data:fc});
+  m.addSource("route",{type:"geojson",data:fc});m.addSource("pl",{type:"geojson",data:fc,cluster:true,clusterRadius:38,clusterMaxZoom:14,clusterProperties:(window.V2CP||undefined)});m.addSource("fix",{type:"geojson",data:fc});m.addSource("me",{type:"geojson",data:fc});
   m.addLayer({id:"route-line",type:"line",source:"route",filter:["==",["geometry-type"],"LineString"],layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":c.glow,"line-width":4,"line-opacity":.8}},"stn-dot");
   m.addLayer({id:"cl",type:"circle",source:"pl",filter:["has","point_count"],paint:{"circle-color":c.halo,"circle-stroke-color":c.fg,"circle-stroke-width":1.5,"circle-radius":["step",["get","point_count"],15,5,18,12,22]}},"stn-dot");
   m.addLayer({id:"cl-n",type:"symbol",source:"pl",filter:["has","point_count"],layout:{"text-field":["to-string",["get","point_count"]],"text-font":["Noto Sans Bold"],"text-size":13,"text-allow-overlap":true},paint:{"text-color":c.fg}},"stn-dot");
@@ -2698,10 +2698,14 @@ function closeFilters(){fbg.classList.remove("on");fs.classList.remove("on");set
 fbg.onclick=closeFilters;window.openFilters=openFilters;
 
 // ---------- pins emoji sur la carte MapLibre
+function emoC(x,t,cx,cy,px){const S2=Math.ceil(px*2.2),c=document.createElement("canvas");c.width=c.height=S2;const y=c.getContext("2d");y.font=`${px}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;y.textAlign="center";y.textBaseline="middle";y.fillText(t,S2/2,S2/2);
+  let d;try{d=y.getImageData(0,0,S2,S2).data;}catch(e){x.drawImage(c,cx-S2/2,cy-S2/2);return;}let a=S2,b=S2,e2=-1,f=-1;for(let yy=0;yy<S2;yy++)for(let ii=0;ii<S2;ii++)if(d[(yy*S2+ii)*4+3]>20){if(ii<a)a=ii;if(ii>e2)e2=ii;if(yy<b)b=yy;if(yy>f)f=yy;}
+  if(e2<0){return;}const w=e2-a+1,hh=f-b+1;x.drawImage(c,a,b,w,hh,Math.round(cx-w/2),Math.round(cy-hh/2),w,hh);}
+window.emoC=emoC;
 glFeat=function(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:Object.assign({id:p.id,c:CC[p.cat]||"#888",cat:p.cat,n:glShort(p.n),star:isStar(p.id)},extra||{})};};
 function pinImg(cat,big){const S=big?84:64,c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");const r=S/2-3;
   x.beginPath();x.arc(S/2,S/2,r-3,0,Math.PI*2);x.fillStyle="#fff";x.fill();x.lineWidth=big?9:7;x.strokeStyle=CC[cat]||"#888";x.stroke();
-  x.font=`${Math.round(S*.46)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(EMO[cat]||"•",S/2,S/2+S*.03);
+  emoC(x,EMO[cat]||"•",S/2,S/2,Math.round(S*.44));
   return x.getImageData(0,0,S,S);}
 function glPins(){const m=GL.map;if(!m||m.getLayer("pt-ico"))return;
   Object.keys(CATS).forEach(k=>{try{if(!m.hasImage("e-"+k))m.addImage("e-"+k,pinImg(k,false),{pixelRatio:2});if(!m.hasImage("E-"+k))m.addImage("E-"+k,pinImg(k,true),{pixelRatio:2});}catch(e){}});
@@ -2726,6 +2730,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 75 · 21 oct. 10 h 10";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
@@ -2748,7 +2753,7 @@ try{document.fonts&&document.fonts.ready.then(measure2);}catch(e){}
 const _show=showTab;showTab=function(id){_show(id);requestAnimationFrame(measure2);};
 // grappes : emoji de la famille dominante
 function famImg(i){const S=76,c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");x.beginPath();x.arc(S/2,S/2,S/2-2,0,Math.PI*2);x.fillStyle="#fff";x.fill();x.lineWidth=5;x.strokeStyle="#1F2A48";x.stroke();
-  x.font=`${Math.round(S*.5)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(FAMI[i],S/2,S/2+2);return x.getImageData(0,0,S,S);}
+  window.emoC(x,FAMI[i],S/2,S/2,Math.round(S*.46));return x.getImageData(0,0,S,S);}
 function clFam(){const m=GL.map;if(!m||m.getLayer("cl-fam")||!m.getLayer("cl"))return;
   FAMI.forEach((e,i)=>{try{if(!m.hasImage("F"+i))m.addImage("F"+i,famImg(i),{pixelRatio:2});}catch(err){}});
   const g=i=>["get","f"+i];
