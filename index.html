@@ -1,7 +1,7 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tokyo 15–25</title>
-<meta name="theme-color" content="#141416">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#11172A" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,7 +12,7 @@
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{-webkit-text-size-adjust:100%}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>window.APPMODE=true;</script>
 </head><body>
-<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#141416;color:#efede8;display:flex;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif"><form id="gatef" style="width:min(320px,86vw);text-align:center"><div style="font-size:13px;letter-spacing:.14em;color:#9a968f;margin-bottom:10px">YATONI &amp; MARIANA</div><div style="font-size:30px;font-weight:700;margin-bottom:22px">Tokyo 15–25</div><input id="gatei" type="password" inputmode="numeric" autocomplete="off" placeholder="Code" aria-label="Code d'accès" style="width:100%;box-sizing:border-box;font-size:22px;text-align:center;padding:12px;border-radius:12px;border:1px solid #3a3a3e;background:#1d1d20;color:#efede8;letter-spacing:.3em"><button type="submit" style="margin-top:14px;width:100%;padding:12px;border-radius:12px;border:0;background:#e3b06c;color:#141416;font-size:16px;font-weight:700">Entrer</button><div id="gatee" style="min-height:20px;margin-top:10px;font-size:13px;color:#e37c6c"></div></form></div>
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#fff;color:#1F2A48;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',ui-rounded,system-ui,sans-serif"><form id="gatef" style="width:min(320px,86vw);text-align:center"><div style="font-family:'Dela Gothic One','Zen Maru Gothic',sans-serif;font-size:44px;line-height:1">Tokyo</div><div style="height:6px;border-radius:6px;margin:14px 0 8px;background:linear-gradient(90deg,#9ACD32 0 20%,#F39700 20% 40%,#E85298 40% 60%,#00A7DB 60% 80%,#9B7CB6 80%)"></div><div style="font-size:14px;font-weight:700;color:#5A6585;margin-bottom:22px">15 → 25 oct. · Yatoni et Mariana</div><input id="gatei" type="password" inputmode="numeric" autocomplete="off" placeholder="Code" aria-label="Code d'accès" style="width:100%;box-sizing:border-box;font-size:22px;text-align:center;padding:13px;border-radius:999px;border:0;background:#F3F5FA;color:#1F2A48;letter-spacing:.3em;font-family:inherit"><button type="submit" style="margin-top:12px;width:100%;padding:14px;border-radius:999px;border:0;background:#E85298;color:#fff;font-size:17px;font-weight:900;font-family:inherit">Entrer</button><div id="gatee" style="min-height:20px;margin-top:10px;font-size:14px;color:#D6336C;font-weight:700"></div></form></div>
 <script>(function(){const H="a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3";const K="tk-gate";async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
 function ok(){const g=document.getElementById("gate");if(g)g.remove();document.documentElement.style.overflow="";}
 try{if(localStorage.getItem(K)===H){ok();return;}}catch(e){}
@@ -2427,7 +2427,7 @@ function GLsync(){if(!GL.ready)return;const m=GL.map;
   m.getSource("fix").setData({type:"FeatureCollection",features:fixed.map(p=>glFeat(p,{sel:p.id===selected,base:p.cat==="base",...(sIds.has(p.id)?{num:stops.indexOf(p)+1}:{})}))});
   m.getSource("route").setData({type:"FeatureCollection",features:stops.length>1?[{type:"Feature",geometry:{type:"LineString",coordinates:stops.filter(p=>p.lat<36.2).map(p=>[p.lng,p.lat])},properties:{}}]:[]});
   let o=null;try{o=originOrEst();}catch(e){}
-  m.getSource("me").setData({type:"FeatureCollection",features:o&&o.lat?[{type:"Feature",geometry:{type:"Point",coordinates:[o.lng,o.lat]},properties:{g:originKey==="gps",n:originKey==="gps"?"Vous":(originKey?"Point de départ":"Vous (estimé)")}}]:[]});
+  m.getSource("me").setData({type:"FeatureCollection",features:(()=>{const gp=(typeof GEO!=="undefined"&&GEO);const isG=originKey==="gps"||(!originKey&&gp);if(!o||!o.lat||(!originKey&&!gp))return[];return[{type:"Feature",geometry:{type:"Point",coordinates:[o.lng,o.lat]},properties:{g:!!isG,n:isG?"Vous":"Point de départ"}}];})()});
   if(originKey==="gps"&&typeof GEO!=="undefined"&&GEO){if(GL.wantFly){GL.wantFly=false;GL.follow=true;m.flyTo({center:[GEO.lng,GEO.lat],zoom:Math.max(m.getZoom(),16),duration:700});}
     else if(GL.follow){const c=m.getCenter();if(Math.abs(c.lng-GEO.lng)+Math.abs(c.lat-GEO.lat)>0.00015)m.easeTo({center:[GEO.lng,GEO.lat],duration:600});}}
   const lb=document.getElementById("zloc");if(lb)lb.setAttribute("aria-pressed",!!(GL.follow&&originKey==="gps"&&typeof GEO!=="undefined"&&GEO));}
@@ -2584,8 +2584,7 @@ mtop.querySelector('[data-q="filt"]').onclick=()=>openFilters();
 function padTop(){return mtop.getBoundingClientRect().height+16;}
 function easeToPlace(p){if(!p||!p.lat)return;if(typeof GL!=="undefined"&&GL.ready&&GL.map){const m=GL.map;const im=document.body.classList.contains("immap");
     const pad=im?{top:padTop(),bottom:hFor("half")+10,left:20,right:20}:{top:0,bottom:0,left:0,right:0};
-    m.easeTo({center:[p.lng,p.lat],zoom:Math.max(m.getZoom(),15.2),padding:pad,duration:520,easing:t=>1-Math.pow(1-t,3)});
-    setTimeout(()=>{try{m.setPadding({top:0,bottom:0,left:0,right:0});}catch(e){}},560);return;}
+    m.easeTo({center:[p.lng,p.lat],zoom:Math.max(m.getZoom(),15.2),offset:[0,Math.round((pad.top-pad.bottom)/2)],duration:560,easing:t=>1-Math.pow(1-t,3)});return;}
   const [x,y]=PXY[p.id]||[];if(x!=null){const w=Math.min(vb.w,200);flyTo(x,y+w*.18,w);}}
 const _center=centerOn;centerOn=function(p){if(document.body.classList.contains("immap"))return easeToPlace(p);return _center(p);};
 const _focus=focusDetail;focusDetail=function(){if(document.body.classList.contains("immap")){const p=byId[selected];setDH("half");scr.scrollTo({top:0,behavior:"smooth"});easeToPlace(p);return;}return _focus();};
