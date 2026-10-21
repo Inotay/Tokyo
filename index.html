@@ -752,6 +752,32 @@ body.immap #detail .card.sel{animation:fin .22s ease-out}
 
 .libw{display:flex;flex-direction:column;gap:2px;background:color-mix(in srgb,var(--cc) 12%,transparent);border-radius:14px;padding:10px 12px;margin:10px 0 6px;font-size:14.5px;line-height:1.5;color:var(--fg)}.libw b{font-size:13px;color:var(--cc);font-weight:800}
 .prio-hl{background:color-mix(in srgb,#F28AB6 16%,transparent);border-radius:16px;padding-left:10px!important;padding-right:10px!important;margin:4px 0}
+.env3 .eintro{color:var(--fg2);font-size:14.5px;line-height:1.5;margin:0 0 14px}
+.env3 .elist{display:flex;flex-direction:column;gap:8px}
+.ecard{position:relative;display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:start;background:color-mix(in srgb,var(--ec) 13%,var(--bg));border-radius:18px;padding:12px 14px 12px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s}
+.ecard:active{transform:scale(.985)}
+.ecard.hl{background:color-mix(in srgb,#F28AB6 22%,var(--bg));box-shadow:inset 0 0 0 2px color-mix(in srgb,#F28AB6 55%,transparent)}
+.ecard.done{opacity:.5}
+.echk{width:34px;height:34px;border-radius:50%;border:2px solid color-mix(in srgb,var(--ec) 45%,transparent);background:var(--bg);color:transparent;font-weight:900;font-size:16px;display:grid;place-items:center;margin-top:1px;padding:0}
+.echk[aria-pressed="true"]{background:var(--ec);border-color:var(--ec);color:#fff}
+.ebody{min-width:0}
+.etop{display:flex;align-items:flex-start;gap:8px}
+.etop .rd{flex:none;margin-top:1px}
+.etop b{font-size:16px;line-height:1.3;font-weight:900;color:var(--fg)}
+.ealso{font-size:13.5px;color:var(--fg2);margin-top:3px;font-weight:700}
+.etag{display:inline-block;margin-top:6px;font-size:12.5px;font-weight:800;color:color-mix(in srgb,var(--ec) 80%,var(--fg));background:var(--bg);border-radius:999px;padding:2px 10px}
+.ewhy{font-size:14px;line-height:1.45;color:var(--fg2);margin:6px 0 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ewhy.elong{display:none}
+.ecard.open .ewhy.elong{display:block;-webkit-line-clamp:unset}
+.echips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.echip{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--bg);color:var(--fg);border-radius:999px;padding:3px 11px 3px 3px;font-size:13px;font-weight:700;max-width:100%}
+.echip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.echip.plus{padding:3px 11px;color:var(--fg2)}
+.echip.more{display:none}.ecard.open .echip.more{display:inline-flex}.ecard.open .echip.plus{display:none}
+.edone{margin-top:16px}.edone summary{font-weight:800;color:var(--fg2);font-size:14px;cursor:pointer;list-style:none;padding:6px 0}
+.edone summary::-webkit-details-marker{display:none}
+.edone .elist{margin-top:6px}
+.emore{display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:color-mix(in srgb,var(--ec) 75%,var(--fg))}.ecard.open .emore{display:none}
 /*V2END*/
 </style>
 
@@ -2841,7 +2867,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 84 · 21 oct. 15 h 10";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 85 · 21 oct. 15 h 30";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
@@ -2855,6 +2881,45 @@ const LIBW={sw1:"Le meilleur créneau : samedi 24 vers 20 h 30, c'est le soir o�
 const LIBG="Samedi 24 en premier, c'est le soir le plus animé. Vendredi 23 marche bien aussi, surtout après un concert. Jeudi 22 est plus calme. Arriver entre 20 h 30 et 22 h.";
 const _c3=cardHtml;cardHtml=function(p){const h=_c3(p);if(p.cat!=="libertin")return h;const box=`<div class="libw"><b>🌙 Quels soirs y aller</b><span>${esc(LIBW[p.id]||LIBG)}</span></div>`;return h.replace(/(<div class="area">[\s\S]*?<\/div>)/,"$1"+box);};
 try{if(selected){DK="";renderDetail();}}catch(e){}
+// ===== Envies v3 : une seule liste mélangée, condensée, cartes teintées =====
+const TOPTAG={a7:"jusqu'au dim. 25",ev3:"11 h à 21 h, tous les jours",nb5:"fermé le mercredi",ev5:"jusqu'au dim. 25",ev1:"ven. 23 à 18 h 30",na7:"fermé le lundi",ev4:"jusqu'à 21 h",nr5:"le soir, réserver",z7:"gratuit",es1:"fermé dim. et lun.",a5:"rouvre sam. 24",ev2:"sam. 24 et dim. 25",z6:"fermé lun. et mar.",na11:"le soir",t1:"tôt le matin",ev8:"sam. jusqu'à 20 h",ev11:"dernier jour dim. 25",ev23:"sur réservation, gratuit",ev20:"dim. 25 à 13 h, réserver",ev22:"ven. jusqu'à 20 h"};
+const TOPTITLE={ev3:"Shunga de Kunisada et Kuniyoshi sur une scène de nō",z10:"La boucle mode d'Aoyama : Yohji, Comme des Garçons, Issey",nb5:"Hyakudan Kaidan, l'escalier aux cent marches",ev1:"Concert d'Amenra à Daikanyama",na7:"Kunisada au musée Okura",ev4:"Re: Horror, de vrais décors de films d'horreur",nr5:"Dîner de baudroie chez Isegen",z7:"Intermediatheque, le cabinet de curiosités",sf1:"2nd STREET Ginza, la chasse aux créateurs",es1:"Atelier Adachi, estampes tirées à la main",a5:"Le musée Nezu et son jardin",ev2:"Daniel Hui en 35 mm au Waseda Shōchiku",z6:"Le musée des parasites de Meguro",na11:"MUSIUM, le coffre à vinyles",t1:"Matcha au pavillon de Hama-rikyu",ev8:"Turner, peindre le sublime",ev11:"Pop-up Margiela chez Dover Street Market",ev23:"TOKYO ATLAS, le parking souterrain de 1995",ev20:"Du vrai nō à l'école Kita",ev22:"Le Suikoden de Kuniyoshi à la gare de Tokyo"};
+const stripLead=s=>String(s||"").replace(/^[^:]{2,60}\s:\s/,"").replace(/^./,c=>c.toUpperCase());
+function envColor(cat){const m=/--c:\s*([^;"]+)/.exec(rdHtml(cat,"sm")||"");return m?m[1]:((CATS[cat]||{}).c||"#F28AB6");}
+function shortName(n){return String(n).replace(/\s*\((?![^)]*\d{1,2}:)[^)]*\)\s*$/,"").replace(/\s*[:«,].*$/,"").trim()||n;}
+function envItems(){const out=[],seen=new Map();
+  PRIO.forEach((p,i)=>{const ids=p[2].filter(id=>byId[id]);const sig=ids.slice().sort().join(",");
+    if(sig&&seen.has(sig)){const it=seen.get(sig);it.keys.push("prio_"+i);it.also.push(p[0]);it.why+=(it.why?" ":"")+(p[1]||"");return;}
+    const it={src:"p",keys:["prio_"+i],title:p[0],also:[],why:p[1]||"",ids,hl:!!(p[3]&&p[3].hl),tag:""};out.push(it);if(sig)seen.set(sig,it);});
+  const pIds=new Map();out.forEach(it=>it.ids.forEach(id=>{if(!pIds.has(id))pIds.set(id,it);}));
+  const lv=tripDayNow()||0,tops=[];
+  TOP.forEach(t=>{const p=byId[t[0]];if(!p||(lv&&t[3]<lv))return;const host=pIds.get(p.id);
+    if(host){if(!host.tag)host.tag=TOPTAG[p.id]||"";if(!host.keys.includes(p.id))host.keys.push(p.id);return;}
+    tops.push({src:"t",keys:[p.id],title:TOPTITLE[p.id]||shortName(p.n),also:[],why:stripLead(t[2]),ids:[p.id],hl:false,tag:TOPTAG[p.id]||""});});
+  const hl=out.filter(x=>x.hl),pr=out.filter(x=>!x.hl),mix=[];let a=0,b=0;
+  while(a<pr.length||b<tops.length){if(a<pr.length)mix.push(pr[a++]);if(b<tops.length)mix.push(tops[b++]);}
+  return hl.concat(mix);}
+const envDone=it=>it.keys.length&&it.keys.every(k=>isDone(k));
+function envCard(it){const cat=(byId[it.ids[0]]||{}).cat||"cadeaux",c=envColor(cat),d=envDone(it),multi=it.ids.length>1;
+  const chips=multi?it.ids.map((id,j)=>`<button type="button" class="echip${j>2?" more":""}" data-open="${id}">${rdHtml(byId[id].cat,"sm")}<span>${esc(shortName(byId[id].n))}</span></button>`).join("")+(it.ids.length>3?`<button type="button" class="echip plus" data-more>+${it.ids.length-3}</button>`:""):"";
+  return `<div class="ecard${d?" done":""}${it.hl?" hl":""}" style="--ec:${c}" ${!multi&&it.ids[0]?`data-go="${it.ids[0]}"`:"data-x"} role="button" tabindex="0">
+  <button type="button" class="echk" data-keys="${it.keys.join(",")}" aria-pressed="${d}" aria-label="Cocher">✓</button>
+  <div class="ebody"><div class="etop">${rdHtml(cat,"sm")}<b>${esc(it.title)}</b></div>
+  ${it.also.length?`<div class="ealso">+ ${it.also.map(esc).join(" · ")}</div>`:""}
+  ${it.tag?`<span class="etag">⏳ ${esc(it.tag)}</span>`:""}
+  ${it.why?`<p class="ewhy${multi?" elong":""}">${esc(it.why)}</p>`:""}
+  ${chips?`<div class="echips">${chips}</div>`:""}
+  ${multi?`<span class="emore">Détails</span>`:""}</div></div>`;}
+renderTop=function(){const v=document.getElementById("view-top");if(!v||v.hidden)return;
+  const all=envItems(),todo=all.filter(x=>!envDone(x)),done=all.filter(envDone);
+  v.innerHTML=`<div class="now env3"><div class="now-head"><h2>À ne pas louper</h2><span class="clock">${done.length}/${all.length}</span></div>
+  <p class="eintro">Vos envies et ce qui ferme bientôt, tout mélangé. Touchez une carte pour l'ouvrir, cochez quand c'est fait.</p>
+  <div class="elist">${todo.map(envCard).join("")}</div>
+  ${done.length?`<details class="edone"><summary>Déjà fait (${done.length})</summary><div class="elist">${done.map(envCard).join("")}</div></details>`:""}</div>`;
+  v.querySelectorAll(".echk").forEach(b=>b.onclick=e=>{e.stopPropagation();const ks=b.dataset.keys.split(",");const all=ks.every(k=>isDone(k));ks.forEach(k=>{if(isDone(k)===all)toggleDone(k);});setTimeout(()=>{try{renderTop();}catch(e){}},30);});
+  v.querySelectorAll(".echip[data-open]").forEach(b=>b.onclick=e=>{e.stopPropagation();openSheet(b.dataset.open);});
+  v.querySelectorAll(".echip.plus").forEach(b=>b.onclick=e=>{e.stopPropagation();b.closest(".ecard").classList.add("open");});
+  v.querySelectorAll(".ecard").forEach(c=>{const go=()=>{if(c.dataset.go)openSheet(c.dataset.go);else c.classList.toggle("open");};c.onclick=go;c.onkeydown=e=>{if(e.key==="Enter")go();};});};
 try{renderTop();}catch(e){}
 // mesures en direct (barre d'état, encoche, police chargée)
 function vh(){let v=window.innerHeight;try{if(navigator.standalone||matchMedia("(display-mode: standalone)").matches){const port=window.innerHeight>=window.innerWidth;const sh=port?Math.max(screen.height,screen.width):Math.min(screen.height,screen.width);if(sh>v&&sh-v<140)v=sh;}}catch(e){}window.__vh=v;return v;}
