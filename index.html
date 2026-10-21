@@ -1915,7 +1915,7 @@ function resetFilters(){activeCats=new Set(Object.keys(CATS));activeDay=null;rel
   const ob=document.getElementById("ohbar");if(ob){const c=ob.querySelector(".chip");if(c){c.setAttribute("aria-pressed","false");c.innerHTML='<span class="dot" style="background:var(--ok)"></span>Ouvert maintenant';}const s=ob.querySelector("select");if(s)s.value="now";const t=ob.querySelector("input[type=time]");if(t)t.hidden=true;}
   hideChooser&&hideChooser();saveState();render();if(typeof toast==="function")toast("Filtres réinitialisés : tout est affiché");}
 function isStar(id){try{if(isFav(id))return true;}catch(e){}if(typeof TOPR!=="undefined"&&TOPR[id])return true;if(typeof PRIO!=="undefined")return PRIO.some(x=>x[2].includes(id));return false;}
-function visible(p){if(p.deleted)return false;if(typeof QUERY!=="undefined"&&QUERY)return matchQ(p);if(openOnly&&p.cat!=="base"&&!isOpenNow(p))return false;if(relFilter==="sure"&&relOf(p)!=="sure")return false;if(relFilter==="gem"&&!(p.gem||relOf(p)==="pari"))return false;if(relFilter==="star"&&!isStar(p.id))return false;return activeCats.has(p.cat)&&(activeDay===null||p.days.includes(activeDay)||p.cat==="base"&&p.days.includes(activeDay));}
+function visible(p){if(p.deleted)return false;if(typeof QUERY!=="undefined"&&QUERY)return matchQ(p);if(openOnly&&p.cat!=="base"&&!isOpenNow(p))return false;if(relFilter==="sure"&&relOf(p)!=="sure")return false;if(relFilter==="gem"&&!(p.gem||relOf(p)==="pari"))return false;if(relFilter==="star"){if(!isStar(p.id))return false;if(activeCats.size<Object.keys(CATS).length)return true;}return activeCats.has(p.cat)&&(activeDay===null||p.days.includes(activeDay)||p.cat==="base"&&p.days.includes(activeDay));}
 let lastErr=0;function reportErr(e){try{console.error(e);const n=Date.now();if(n-lastErr<4000)return;lastErr=n;if(typeof toast==="function")toast("Petit bug : "+String(e&&e.message||e).slice(0,90)+" (envoyez-moi une capture)");}catch(_){}}
 window.addEventListener("error",ev=>reportErr(ev.error||ev.message));
 function render(){
@@ -2665,7 +2665,7 @@ function upCount(){const n=P.filter(p=>{try{return visible(p)&&p.cat!=="base"}ca
   grab.querySelector(".dtt").textContent=openOnly?"Ouvert autour":"Autour";
   const qs=mtop.querySelectorAll(".mq");qs[0].setAttribute("aria-pressed",openOnly);qs[1].setAttribute("aria-pressed",relFilter==="star");
   const nf=(activeCats.size<Object.keys(CATS).length?1:0)+(relFilter&&relFilter!=="star"?1:0)+(whenDay!=="now"?1:0);const bd=qs[2].querySelector(".badge");bd.hidden=!nf;bd.textContent=nf;}
-const _render=render;render=function(){_render();try{upCount();}catch(e){}};
+const _render=render;let __lastN=-1;render=function(){_render();try{upCount();const n=P.filter(p=>{try{return visible(p)&&p.cat!=="base"}catch(e){return false}}).length;if(n===0&&__lastN!==0&&document.body.classList.contains("immap"))toast("Aucun lieu avec ces filtres : touchez Filtres puis « Tout afficher »");__lastN=n;}catch(e){}};
 mtop.querySelector('[data-q="open"]').onclick=()=>toggleOpenOnly();
 q.addEventListener("input",()=>{if(!document.body.classList.contains("immap"))return;if(q.value.trim()){if(selected)closeFiche(true);if(DH==="peek")setDH("full");scr.scrollTo({top:0});}});
 q.addEventListener("focus",()=>{if(document.body.classList.contains("immap")&&DH==="peek"&&!selected)setDH("half");});
@@ -2743,7 +2743,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 77 · 21 oct. 10 h 25";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 78 · 21 oct. 10 h 30";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
