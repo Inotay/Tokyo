@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{-webkit-text-size-adjust:100%}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:light dark}html{-webkit-text-size-adjust:100%}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>window.APPMODE=true;</script>
 </head><body>
 <div id="gate" style="position:fixed;inset:0;z-index:9999;background:#fff;color:#1F2A48;display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic','Hiragino Maru Gothic ProN',ui-rounded,system-ui,sans-serif"><form id="gatef" style="width:min(320px,86vw);text-align:center"><div style="font-family:'Dela Gothic One','Zen Maru Gothic',sans-serif;font-size:44px;line-height:1">Tokyo</div><div style="height:6px;border-radius:6px;margin:14px 0 8px;background:linear-gradient(90deg,#9ACD32 0 20%,#F39700 20% 40%,#E85298 40% 60%,#00A7DB 60% 80%,#9B7CB6 80%)"></div><div style="font-size:14px;font-weight:700;color:#5A6585;margin-bottom:22px">15 → 25 oct. · Yatoni et Mariana</div><input id="gatei" type="password" inputmode="numeric" autocomplete="off" placeholder="Code" aria-label="Code d'accès" style="width:100%;box-sizing:border-box;font-size:22px;text-align:center;padding:13px;border-radius:999px;border:0;background:#F3F5FA;color:#1F2A48;letter-spacing:.3em;font-family:inherit"><button type="submit" style="margin-top:12px;width:100%;padding:14px;border-radius:999px;border:0;background:#E85298;color:#fff;font-size:17px;font-weight:900;font-family:inherit">Entrer</button><div id="gatee" style="min-height:20px;margin-top:10px;font-size:14px;color:#D6336C;font-weight:700"></div></form></div>
@@ -644,6 +644,75 @@ body.immap .origin,body.immap #listcount{display:none!important}
 /* fiche overlay (autres onglets) */
 .sheet{border-radius:24px 24px 0 0!important}
 .taxi .tk-top,.taxi .tk-roman{font-family:var(--font-body)!important}
+/* ===== v2b : grille 16 px, lisibilité, pastilles unifiées ===== */
+:root{--g:16px}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--fg2:#46526F;--fg3:#7A84A3}}
+:root[data-theme="light"]{--fg2:#46526F;--fg3:#7A84A3}
+/* header : hauteur fixe, même gouttière */
+header.v2{padding:calc(8px + env(safe-area-inset-top,0px)) 0 0!important}
+header.v2 .hrow{height:32px}
+header.v2 .metro{margin:8px 0 8px}
+body.immap header.v2{position:fixed;top:0;left:0;right:0;z-index:30;background:var(--bg);padding-left:var(--g)!important;padding-right:var(--g)!important}
+/* nav : hauteur fixe */
+@media (max-width:640px){
+  nav.tabs{height:calc(62px + env(safe-area-inset-bottom,0px));padding:4px 0 env(safe-area-inset-bottom,0px)!important;align-items:flex-start;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  nav.tabs button{padding:4px 0 0!important;font-size:11.5px!important}
+}
+/* surfaces flottantes alignées sur la gouttière */
+body.immap .mtop{left:var(--g);right:0}
+.mtop .msearch{margin-right:var(--g)}
+.mtop .mrow{padding-right:var(--g)}
+body.immap .mapctl{right:var(--g)!important}
+/* tiroir : tout sur la même ligne de départ */
+body.immap .dgrab{padding:8px var(--g) 10px}
+body.immap .dscroll{padding:0 var(--g) calc(16px + env(safe-area-inset-bottom,0px))}
+.dgrab .dt{font-size:17px}
+.dgrab .dt small{font-size:13.5px}
+/* lignes de liste : colonne d'icône 44 px, texte aligné */
+.row,.row.hasimg{grid-template-columns:44px 1fr!important;gap:12px!important;padding:12px 0!important;border-radius:0!important;border:0!important;border-bottom:1px solid var(--line)!important;background:none!important;align-items:start!important}
+.list{gap:0!important}
+.row .th{width:44px!important;height:44px!important;border-radius:50%!important;margin:0!important}
+.cicon.v2{width:44px!important;height:44px!important;display:grid!important;place-items:center;margin:0!important}
+.cicon.v2 .rd{width:44px;height:44px;border-width:4px;font-size:21px}
+.row>span:nth-child(2){min-width:0}
+.row .cl{display:flex!important;align-items:center;gap:5px;font-size:12.5px!important;color:var(--cc)!important;margin:0 0 1px}
+.row .cl svg{width:13px;height:13px}
+.row b{font-size:16px!important;line-height:1.3!important;margin:0 0 4px}
+.row small{display:inline!important;font-size:14px!important;line-height:1.55!important;color:var(--fg2)!important}
+.row .p{display:none!important}
+/* pastilles d'état et de fiabilité unifiées */
+.oh,.rb{font-family:var(--font-body)!important;font-size:12px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important;border:0!important;border-radius:999px!important;padding:2px 9px!important;margin:0 6px 2px 0!important;display:inline-flex!important;align-items:center;line-height:18px!important;vertical-align:1px!important;white-space:nowrap}
+.oh{color:var(--oc)!important;background:color-mix(in srgb,var(--oc) 13%,transparent)!important}
+.rb{color:var(--rc)!important;background:color-mix(in srgb,var(--rc) 13%,transparent)!important}
+.mk{font-family:var(--font-body)!important;font-weight:900!important;margin:0 6px 0 0!important}
+/* fiche : même gouttière, roundel 44 px */
+body.immap #detail .card.sel{padding:0 0 14px!important}
+.card.sel .fhd{gap:12px;margin:0 0 8px}
+.card.sel .fhd .rd.lg{width:44px;height:44px;border-width:5px;font-size:21px}
+.card.sel .fhd .cat{font-size:13px!important}
+.card .area,.card .from,.card .ohline{font-size:14px!important;line-height:1.5}
+.card p,.card .why,.card .d{font-size:15px;line-height:1.6}
+/* envies : lignes compactes */
+.prio-row{grid-template-columns:44px 1fr!important;gap:12px!important;padding:14px 0!important;align-items:start!important}
+.prio-row .chk{width:36px;height:36px;margin:2px 4px 0}
+.prio-row b{font-size:16.5px!important;font-weight:900!important}
+.pchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pchip{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--bg2);color:var(--fg);border-radius:999px;padding:4px 11px 4px 4px;font-size:13.5px;font-weight:700;max-width:100%}
+.pchip span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdet{margin-top:6px}
+.pdet summary{font-size:13.5px;font-weight:700;color:var(--glow);cursor:pointer;list-style:none}
+.pdet summary::-webkit-details-marker{display:none}
+.pdet p{font-size:14.5px;line-height:1.6;color:var(--fg2);margin:6px 0 0}
+#view-top .near{border:0!important;background:none!important;padding:0!important}
+.top-row{grid-template-columns:44px 1fr!important;gap:12px!important;padding:14px 0!important}
+.top-row .rk.rd{width:44px;height:44px;font-size:15px}
+.top-row b{font-size:16.5px!important;font-weight:900!important}
+.top-row .when{font-size:13.5px;font-weight:700;color:var(--glow)}
+.top-row small{font-size:14px!important;line-height:1.5}
+.plinks.pchips{display:flex!important;margin-top:8px;font-size:13.5px}
+.plinks .pchip{background:var(--bg2)!important;color:var(--fg)!important;text-decoration:none!important;padding:4px 11px 4px 4px!important;border-radius:999px!important;font-weight:700!important}
+.card .cat::before,.card.sel .fhd .cat::before{display:none!important}
+body.immap.dh-peek .dscroll{visibility:hidden}
 
 /*V2END*/
 </style>
@@ -715,6 +784,7 @@ body.immap .origin,body.immap #listcount{display:none!important}
 <div class="sheet" id="sheet" hidden role="dialog" aria-label="Fiche du lieu"><div class="sheet-grab"><span></span><button type="button" aria-label="Fermer">×</button></div><div class="sheet-body"></div></div>
 <div class="taxi" id="taxi" hidden role="dialog" aria-label="Adresse pour le chauffeur"></div>
 <script>
+window.V2CP=(function(){const F=[["repas","food","cafes","the","dessert","bars"],["vintage","bottes","design","lampes","cadeaux","electro","jeux","manga","livres","estampes"],["musees","archi","quartier","nature","curio","souterr","folk","cine","son","sento","base"],["salon"],["love","libertin","hentai","adulte"]];const o={};F.forEach((l,i)=>{o["f"+i]=["+",["case",["in",["get","cat"],["literal",l]],1,0]];});return o;})();
 const FX=190; // JPY per CHF
 const CATS={
  design:{n:"Design & mobilier",c:"var(--c-design)"},
@@ -2400,7 +2470,7 @@ function glStyle(){const c=glCol();const W=(a)=>["interpolate",["exponential",1.
 function glC(cat){const v=CATS[cat].c;const m=/^var\((--[^)]+)\)$/.exec(v);if(!m)return v;return getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim()||"#888";}
 function glFeat(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:Object.assign({id:p.id,c:glC(p.cat),n:glShort(p.n),star:isStar(p.id)},extra||{})};}
 function glAddOverlay(){const m=GL.map,c=glCol();const fc={type:"FeatureCollection",features:[]};
-  m.addSource("route",{type:"geojson",data:fc});m.addSource("pl",{type:"geojson",data:fc,cluster:true,clusterRadius:30,clusterMaxZoom:15});m.addSource("fix",{type:"geojson",data:fc});m.addSource("me",{type:"geojson",data:fc});
+  m.addSource("route",{type:"geojson",data:fc});m.addSource("pl",{type:"geojson",data:fc,cluster:true,clusterRadius:24,clusterMaxZoom:14,clusterProperties:(window.V2CP||undefined)});m.addSource("fix",{type:"geojson",data:fc});m.addSource("me",{type:"geojson",data:fc});
   m.addLayer({id:"route-line",type:"line",source:"route",filter:["==",["geometry-type"],"LineString"],layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":c.glow,"line-width":4,"line-opacity":.8}},"stn-dot");
   m.addLayer({id:"cl",type:"circle",source:"pl",filter:["has","point_count"],paint:{"circle-color":c.halo,"circle-stroke-color":c.fg,"circle-stroke-width":1.5,"circle-radius":["step",["get","point_count"],15,5,18,12,22]}},"stn-dot");
   m.addLayer({id:"cl-n",type:"symbol",source:"pl",filter:["has","point_count"],layout:{"text-field":["to-string",["get","point_count"]],"text-font":["Noto Sans Bold"],"text-size":13,"text-allow-overlap":true},paint:{"text-color":c.fg}},"stn-dot");
@@ -2557,10 +2627,10 @@ const grab=document.createElement("div");grab.className="dgrab";grab.innerHTML=`
 const scr=document.createElement("div");scr.className="dscroll";
 while(col.firstChild)scr.appendChild(col.firstChild);col.appendChild(grab);col.appendChild(scr);
 function avail(){return Math.max(240,window.innerHeight-(document.body.classList.contains("immax")?0:(hdrH()+navH())));}
-function hdrH(){const h=document.querySelector("header");return h?h.getBoundingClientRect().height:60;}
-function navH(){const n=document.querySelector("nav.tabs");return n?n.getBoundingClientRect().height:60;}
-function hFor(s){const a=avail();if(s==="peek")return 92;if(s==="half")return Math.round(a*.52);const mt=mtop.getBoundingClientRect(),bx=box.getBoundingClientRect();const used=mt.height?(mt.bottom-bx.top+8):74;return Math.round(a-used);}
-function setDH(s,noanim){DH=s;document.body.classList.toggle("dh-peek",s==="peek");const h=hFor(s);document.documentElement.style.setProperty("--dh",h+"px");document.documentElement.style.setProperty("--peek",(s==="peek"?92:Math.min(h,hFor("half")))+"px");
+function hdrH(){const h=document.querySelector("header");return h?h.getBoundingClientRect().bottom:60;}
+function navH(){const n=document.querySelector("nav.tabs");return n?Math.max(0,window.innerHeight-n.getBoundingClientRect().top):60;}
+function hFor(s){const a=avail();if(s==="peek")return 78;if(s==="half")return Math.round(a*.52);const mt=mtop.getBoundingClientRect(),bx=box.getBoundingClientRect();const used=mt.height?(mt.bottom-bx.top+8):74;return Math.round(a-used);}
+function setDH(s,noanim){if(s==="peek"&&selected&&window.closeFiche){DH=s;closeFiche(true);}DH=s;document.body.classList.toggle("dh-peek",s==="peek");const h=hFor(s);document.documentElement.style.setProperty("--dh",h+"px");document.documentElement.style.setProperty("--peek",(s==="peek"?78:Math.min(h,hFor("half")))+"px");
   grab.querySelector(".dl").textContent=s==="full"?"Réduire":(selected&&s!=="peek"?"Liste":"Voir la liste");}
 function vars(){const r=document.documentElement.style;r.setProperty("--hdr",hdrH()+"px");r.setProperty("--nav",navH()+"px");setDH(DH);}
 function applyImmap(){const on=isPhone()&&!document.getElementById("view-map").hidden;document.body.classList.toggle("immap",on);if(!on)document.body.classList.remove("immax");placeSearch();if(on){vars();setTimeout(()=>{try{GL.map&&GL.map.resize();}catch(e){}try{measure();}catch(e){}},60);}}
@@ -2643,6 +2713,40 @@ function glPins(){const m=GL.map;if(!m||m.getLayer("pt-ico"))return;
 let cur=(document.querySelector('nav.tabs button[aria-selected="true"]')||{}).dataset;cur=cur&&cur.tab||"map";
 if(["now","days","list"].includes(cur))cur="map";
 setDH("peek");showTab(cur);render();
+})();
+
+
+//V2B
+// ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
+(function(){
+const FAMI=["🍜","🛍️","🏮","💄","💋"];
+// envies : titre + pastilles de lieux + détails repliés
+prioHtml=function(compact){return `<div class="near">${PRIO.map((p,i)=>{const d=isDone("prio_"+i);const ids=p[2].filter(id=>byId[id]);
+  return `<div class="tl-row prio-row${d?" done":""}"><button class="chk" data-prio="${i}" aria-pressed="${d}" aria-label="Cocher">✓</button><span><b>${esc(p[0])}</b>
+  ${ids.length?`<span class="pchips plinks">${ids.map(id=>`<button type="button" class="pchip" data-open="${id}">${rdHtml(byId[id].cat,"sm")}<span>${esc(byId[id].n.replace(/ \(.*$/,"").replace(/\s*[:,«].*$/,""))}</span></button>`).join("")}</span>`:""}
+  ${compact||!p[1]?"":`<details class="pdet"><summary>Détails</summary><p>${esc(p[1])}</p></details>`}</span></div>`}).join("")}</div>`;};
+try{renderTop();}catch(e){}
+// mesures en direct (barre d'état, encoche, police chargée)
+function measure2(){const r=document.documentElement.style;const h=document.querySelector("header"),n=document.querySelector("nav.tabs");
+  if(h)r.setProperty("--hdr",Math.round(h.getBoundingClientRect().bottom)+"px");
+  if(n){const t=n.getBoundingClientRect().top;r.setProperty("--nav",Math.max(0,Math.round(window.innerHeight-t))+"px");}
+  try{if(GL.map)GL.map.resize();}catch(e){}}
+window.addEventListener("resize",measure2);window.addEventListener("orientationchange",()=>setTimeout(measure2,300));window.addEventListener("pageshow",measure2);
+if(window.visualViewport)visualViewport.addEventListener("resize",measure2);
+try{document.fonts&&document.fonts.ready.then(measure2);}catch(e){}
+[0,200,800,2000].forEach(t=>setTimeout(measure2,t));
+const _show=showTab;showTab=function(id){_show(id);requestAnimationFrame(measure2);};
+// grappes : emoji de la famille dominante
+function famImg(i){const S=76,c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");x.beginPath();x.arc(S/2,S/2,S/2-2,0,Math.PI*2);x.fillStyle="#fff";x.fill();x.lineWidth=5;x.strokeStyle="#1F2A48";x.stroke();
+  x.font=`${Math.round(S*.5)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;x.textAlign="center";x.textBaseline="middle";x.fillText(FAMI[i],S/2,S/2+2);return x.getImageData(0,0,S,S);}
+function clFam(){const m=GL.map;if(!m||m.getLayer("cl-fam")||!m.getLayer("cl"))return;
+  FAMI.forEach((e,i)=>{try{if(!m.hasImage("F"+i))m.addImage("F"+i,famImg(i),{pixelRatio:2});}catch(err){}});
+  const g=i=>["get","f"+i];
+  const pick=["case",[">=",g(0),["max",g(1),g(2),g(3),g(4)]],"F0",[">=",g(1),["max",g(2),g(3),g(4)]],"F1",[">=",g(2),["max",g(3),g(4)]],"F2",[">=",g(3),g(4)],"F3","F4"];
+  try{m.addLayer({id:"cl-fam",type:"symbol",source:"pl",filter:["all",["has","point_count"],["has","f0"]],layout:{"icon-image":pick,"icon-size":["step",["get","point_count"],.95,6,1.08,15,1.2],"icon-allow-overlap":true,"icon-ignore-placement":true}});}catch(err){}
+  try{m.setPaintProperty("cl","circle-opacity",0);m.setPaintProperty("cl","circle-stroke-opacity",0);m.moveLayer("cl-n");m.setLayoutProperty("cl-n","text-offset",[1.15,1.05]);m.setLayoutProperty("cl-n","text-size",12);m.setPaintProperty("cl-n","text-color","#ffffff");m.setPaintProperty("cl-n","text-halo-color","#1F2A48");m.setPaintProperty("cl-n","text-halo-width",3.2);}catch(e){}
+  try{m.setLayoutProperty("pt-ico","icon-size",["interpolate",["linear"],["zoom"],10,.85,14,1,16,1.12]);}catch(e){}}
+(function wait(n){if(typeof GL!=="undefined"&&GL.ready&&GL.map&&GL.map.getLayer("pt-ico")){clFam();return;}if(n<240)setTimeout(()=>wait(n+1),150);})(0);
 })();
 
 </script>
