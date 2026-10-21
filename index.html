@@ -2898,7 +2898,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 90 · 21 oct. 19 h 50";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 91 · 21 oct. 20 h 30";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
@@ -3113,6 +3113,98 @@ quick();draw();
 })();
 </script>
 <!--FXEND-->
+<!--QSTART-->
+<style>
+.mqa{flex:none;height:38px;border-radius:999px;border:0;background:var(--bg);color:var(--fg);font-weight:700;font-size:14px;padding:0 14px;display:flex;align-items:center;gap:6px;box-shadow:var(--sh);white-space:nowrap;max-width:62vw;font-family:inherit;cursor:pointer}
+.mqa span{overflow:hidden;text-overflow:ellipsis}
+.mqa[aria-pressed="true"]{background:var(--glow);color:#fff}
+.mqa .qx{font-size:13px;opacity:.85;margin-left:2px}
+#qsh .qg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#qsh .qb{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1px solid var(--line);background:var(--bg2);color:var(--fg);border-radius:14px;padding:10px 12px;font-family:inherit;font-size:14px;font-weight:700;line-height:1.2;cursor:pointer;min-height:54px}
+#qsh .qb small{font-weight:500;font-size:12px;color:var(--fg2)}
+#qsh .qb[aria-pressed="true"]{background:var(--glow);border-color:var(--glow);color:#fff}
+#qsh .qb[aria-pressed="true"] small{color:#fff}
+#qsh .qb.all{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;min-height:46px}
+#qsh .qhint{font-size:13px;color:var(--fg2);margin:2px 0 4px}
+.qtag{display:inline-block;font-size:12px;font-weight:700;color:var(--glow);margin-top:2px}
+</style>
+<script>
+(function(){
+if(typeof P==="undefined"||typeof visible!=="function")return;
+// quartiers : centre approximatif ; chaque lieu va au centre le plus proche (≤ 3,5 km), sinon « Excursions »
+const QS=[
+["waseda","Waseda · Takadanobaba","Chez vous",35.7105,139.7080],
+["ochiai","Mejiro · Ochiai · Nakai","Chez vous",35.7190,139.6930],
+["shinjuku","Shinjuku · Kabukichō · Ni-chōme","Shinjuku",35.6930,139.7030],
+["nishishinjuku","Nishi-Shinjuku","Shinjuku",35.6880,139.6920],
+["kagurazaka","Kagurazaka · Iidabashi · Yotsuya","Shinjuku",35.6990,139.7350],
+["ikebukuro","Ikebukuro · Sugamo","Nord",35.7290,139.7130],
+["komagome","Komagome · Ōji","Nord",35.7420,139.7420],
+["nippori","Nippori · Senju","Nord",35.7330,139.7850],
+["nakano","Nakano · Kōenji · Ogikubo","Ouest",35.7030,139.6450],
+["kichijoji","Kichijōji · Mitaka · Koganei","Ouest",35.7030,139.5600],
+["chofu","Chōfu · Jindai-ji","Ouest",35.6650,139.5480],
+["shibuya","Shibuya","Sud-ouest",35.6600,139.6990],
+["uehara","Tomigaya · Yoyogi-Uehara · Hatagaya","Sud-ouest",35.6700,139.6830],
+["harajuku","Harajuku · Omotesandō · Aoyama","Sud-ouest",35.6670,139.7110],
+["shimokita","Shimokitazawa · Sangenjaya · Gōtokuji","Sud-ouest",35.6450,139.6580],
+["jiyugaoka","Jiyūgaoka · Todoroki","Sud-ouest",35.6060,139.6560],
+["ebisu","Ebisu · Daikanyama · Nakameguro","Sud",35.6450,139.7020],
+["meguro","Meguro · Gotanda · Shirokane","Sud",35.6300,139.7180],
+["akasaka","Akasaka · Roppongi · Azabu","Centre",35.6600,139.7330],
+["toranomon","Toranomon · Shinbashi · Shiba","Centre",35.6600,139.7520],
+["ginza","Ginza · Yūrakuchō · Tsukiji","Centre",35.6710,139.7660],
+["tokyoeki","Tokyo-eki · Marunouchi · Nihonbashi","Centre",35.6840,139.7720],
+["jinbocho","Jinbōchō · Ochanomizu · Suidōbashi","Centre",35.6990,139.7590],
+["akihabara","Akihabara","Est",35.7000,139.7720],
+["ueno","Ueno · Yanaka · Nezu","Est",35.7180,139.7680],
+["asakusa","Asakusa · Kuramae · Kappabashi","Est",35.7120,139.7930],
+["sumida","Ryōgoku · Kinshichō · Kiyosumi","Est",35.6900,139.8050],
+["odaiba","Odaiba · Tsukishima","Est",35.6400,139.7850],
+["loin","Excursions et loin du centre","Plus loin",0,0]];
+const QN={};QS.forEach(q=>QN[q[0]]=q);
+function dkm(a,b,c,d){const x=(d-b)*Math.cos((a+c)/2*Math.PI/180)*111.32,y=(c-a)*110.57;return Math.hypot(x,y);}
+const AOF={};
+function areaOf(p){if(!p||!p.lat)return "loin";if(AOF[p.id])return AOF[p.id];let best="loin",bd=3.5;for(const q of QS){if(q[0]==="loin")continue;const d=dkm(p.lat,p.lng,q[3],q[4]);if(d<bd){bd=d;best=q[0];}}AOF[p.id]=best;return best;}
+window.areaOf=areaOf;window.AREAS=QN;
+let AREA=null;window.getArea=()=>AREA;
+const _vis=visible;
+visible=function(p){if(AREA&&p&&p.cat!=="base"&&!(typeof QUERY!=="undefined"&&QUERY)&&areaOf(p)!==AREA)return false;return _vis(p);};
+if(typeof filtersActive==="function"){const _fa=filtersActive;filtersActive=function(){return !!AREA||_fa();};}
+// chip
+const row=document.querySelector(".mtop .mrow");
+const chip=document.createElement("button");chip.type="button";chip.className="mqa";
+if(row)row.insertBefore(chip,row.firstChild);
+// sheet
+const bg=document.createElement("div");bg.className="fsh-bg";bg.hidden=true;
+const sh=document.createElement("div");sh.className="fsh";sh.id="qsh";sh.hidden=true;
+sh.innerHTML='<div class="fh"><b>Quartiers</b><button type="button" class="qclose" aria-label="Fermer">✕</button></div><div class="fb"></div>';
+document.body.appendChild(bg);document.body.appendChild(sh);
+function counts(){const c={};P.forEach(p=>{if(p.deleted||p.cat==="base")return;const a=areaOf(p);c[a]=(c[a]||0)+1;});return c;}
+function build(){const c=counts();const fb=sh.querySelector(".fb");let h='<p class="qhint">Choisissez un quartier : la carte et la liste ne montrent plus que ses adresses (les autres filtres restent actifs).</p><div class="qg"><button type="button" class="qb all" data-a="" aria-pressed="'+(!AREA)+'">Tout Tokyo<small>'+Object.values(c).reduce((s,n)=>s+n,0)+' lieux</small></button></div>';
+  let grp=null;
+  QS.forEach(q=>{const n=c[q[0]]||0;if(!n)return;if(q[2]!==grp){if(grp!==null)h+='</div>';grp=q[2];h+='<h5>'+grp+'</h5><div class="qg">';}
+    h+='<button type="button" class="qb" data-a="'+q[0]+'" aria-pressed="'+(AREA===q[0])+'">'+q[1]+'<small>'+n+' lieu'+(n>1?'x':'')+'</small></button>';});
+  if(grp!==null)h+='</div>';fb.innerHTML=h;
+  fb.querySelectorAll(".qb").forEach(b=>b.onclick=()=>pick(b.dataset.a||null));}
+function open(){build();bg.hidden=false;sh.hidden=false;requestAnimationFrame(()=>{bg.classList.add("on");sh.classList.add("on");});}
+function close(){bg.classList.remove("on");sh.classList.remove("on");setTimeout(()=>{bg.hidden=true;sh.hidden=true;},280);}
+bg.onclick=close;sh.querySelector(".qclose").onclick=close;
+function pick(a){AREA=a;close();try{render();}catch(e){}
+  try{if(typeof showTab==="function"&&!document.body.classList.contains("immap"))showTab("map");}catch(e){}
+  setTimeout(()=>{try{if(AREA){const ps=P.filter(p=>!p.deleted&&p.cat!=="base"&&areaOf(p)===AREA&&p.lat<36.2);if(typeof glFit==="function"&&ps.length)glFit(ps,15.5);}else if(typeof glHome==="function")glHome();}catch(e){}},120);
+  syncChip();}
+function syncChip(){if(AREA){const q=QN[AREA];chip.setAttribute("aria-pressed","true");chip.innerHTML='📍 <span>'+q[1].split(" · ")[0]+'</span><span class="qx">✕</span>';}
+  else{chip.setAttribute("aria-pressed","false");chip.innerHTML='📍 <span>Quartiers</span>';}
+  const t=document.querySelector(".dgrab .dtt");if(t&&AREA)t.textContent=QN[AREA][1].split(" · ")[0];}
+chip.onclick=e=>{if(AREA&&e.target.closest(".qx")){pick(null);return;}open();};
+const _r=render;render=function(){_r.apply(this,arguments);try{syncChip();}catch(e){}};
+syncChip();
+// quartier visible dans la fiche
+try{const box=document.getElementById("detail");if(box){new MutationObserver(()=>{const p=(typeof selected!=="undefined"&&selected)?P.find(x=>x.id===selected):null;if(!p)return;const head=box.querySelector(".area,.d-area,.sub");if(!head||head.querySelector(".qtag"))return;const a=areaOf(p);if(a==="loin")return;const s=document.createElement("span");s.className="qtag";s.textContent=" · 📍 "+QN[a][1].split(" · ")[0];head.appendChild(s);}).observe(box,{childList:true,subtree:true});}}catch(e){}
+})();
+</script>
+<!--QEND-->
 
 <script>
 (function(){
