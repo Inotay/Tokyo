@@ -2590,7 +2590,7 @@ renderTrain();
 // ===================== v2 : refonte (couleurs métro, pastilles emoji, carte immersive) =====================
 (function(){
 const CC={design:"#C1A470",lampes:"#F39700",archi:"#8FA3B0",musees:"#9B7CB6",cadeaux:"#E85298",the:"#009944",vintage:"#BB641D",repas:"#F15A22",food:"#E60012",bars:"#B6007A",cafes:"#9C6B3C",salon:"#FF7EB3",adulte:"#D6336C",manga:"#00A7DB",hentai:"#E64980",electro:"#0079C2",nature:"#6CBB5A",quartier:"#F7A600",jeux:"#7B61FF",estampes:"#C0392B",curio:"#5C6B7A",souterr:"#7A8B8C",folk:"#E0A800",son:"#00ADA9",livres:"#8DBF2E",dessert:"#FF8FA8",love:"#FF4F9A",libertin:"#A61E4D",cine:"#E8590C",sento:"#3FA9F5",bottes:"#A0522D",base:"#1F2A48"};
-const EMO={design:"🪑",lampes:"💡",archi:"🏛️",musees:"🖼️",cadeaux:"🎁",the:"🍵",vintage:"👗",repas:"🍜",food:"🍣",bars:"🍸",cafes:"☕",salon:"💄",adulte:"🔞",manga:"📖",hentai:"📕",electro:"🔌",nature:"🌿",quartier:"🏮",jeux:"👾",estampes:"🎴",curio:"💀",souterr:"🚇",folk:"🐈",son:"🎵",livres:"📚",dessert:"🍰",love:"🏩",libertin:"💋",cine:"🎬",sento:"♨️",bottes:"👢",base:"🏠"};
+const EMO={design:"🪑",lampes:"💡",archi:"🏙️",musees:"🖼️",cadeaux:"🎁",the:"🍵",vintage:"👗",repas:"🍜",food:"🍣",bars:"🍸",cafes:"☕",salon:"💄",adulte:"🔞",manga:"📖",hentai:"🍑",electro:"🎧",nature:"🌳",quartier:"🏮",jeux:"👾",estampes:"🎴",curio:"💀",souterr:"🚇",folk:"🐈",son:"🎵",livres:"📚",dessert:"🍰",love:"🏩",libertin:"💋",cine:"🎬",sento:"♨️",bottes:"👢",base:"🏠"};
 const SHORT={repas:"Petits prix",food:"Tables",cafes:"Cafés",the:"Thé",dessert:"Desserts",bars:"Bars",vintage:"Vintage",bottes:"Bottes",design:"Design",lampes:"Lampes",cadeaux:"Cadeaux",electro:"Électro",jeux:"Jeux vidéo",manga:"Manga",hentai:"Hentai",livres:"Livres",adulte:"Adulte",estampes:"Estampes",musees:"Expos",archi:"Archi",quartier:"Balades",nature:"Nature",curio:"Curiosités",souterr:"Souterrains",folk:"Yōkai, chats",cine:"Ciné",son:"Son, clubs",sento:"Sentō",salon:"Beauté",love:"Love hotels",libertin:"Libertin",base:"Logements"};
 const FAM=[["Manger, boire",["repas","food","cafes","the","dessert","bars"]],["Shopping",["vintage","bottes","design","lampes","cadeaux","electro","jeux","manga","livres","estampes"]],["Voir, sortir",["musees","archi","quartier","nature","curio","souterr","folk","cine","son","sento"]],["Pour Mariana",["salon"]],["Coquin",["love","libertin","hentai","adulte"]]];
 Object.keys(CATS).forEach(k=>{if(CC[k])CATS[k].c=CC[k];});
@@ -2728,7 +2728,7 @@ setDH("peek");showTab(cur);render();
 //V2B
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
-const FAMI=["🍜","🛍️","🏮","💄","💋"];
+const FAMI=["🍙","🛍️","⛩️","💄","💋"];
 // envies : titre + pastilles de lieux + détails repliés
 prioHtml=function(compact){return `<div class="near">${PRIO.map((p,i)=>{const d=isDone("prio_"+i);const ids=p[2].filter(id=>byId[id]);
   return `<div class="tl-row prio-row${d?" done":""}"><button class="chk" data-prio="${i}" aria-pressed="${d}" aria-label="Cocher">✓</button><span><b>${esc(p[0])}</b>
