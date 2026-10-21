@@ -724,7 +724,8 @@ body.immap.dh-peek .dscroll{visibility:hidden}
 }
 /* onglets : icône centrée */
 nav.tabs button .ti{line-height:0;padding:0;box-sizing:border-box}
-nav.tabs button .ti svg{display:block;margin:0}
+nav.tabs button .ti .ic{display:block;width:16px;height:16px;vertical-align:0;line-height:0}
+nav.tabs button .ti svg{display:block;margin:0;width:16px;height:16px}
 nav.tabs button .tl2{display:block;line-height:1.2;margin-top:3px}
 /* pas de zoom de page au double tap, sauf sur la carte */
 html,body,button,a,.chip,.row,.card,.dgrab,.dscroll,nav.tabs,.mtop,.fsh,.sheet,.taxi{touch-action:manipulation}
@@ -2742,7 +2743,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 76 · 21 oct. 10 h 20";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 77 · 21 oct. 10 h 25";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
