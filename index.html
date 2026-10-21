@@ -2703,7 +2703,7 @@ const _center=centerOn;centerOn=function(p){if(document.body.classList.contains(
 window.BACK=null;scr.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#placelist .row"))window.__preScroll=scr.scrollTop;},true);
 const _focus=focusDetail;focusDetail=function(){if(document.body.classList.contains("immap")){const p=byId[selected];
     if(DH==="full"){let cam=null;try{if(GL.ready){const c=GL.map.getCenter();cam={c:[c.lng,c.lat],z:GL.map.getZoom()};}}catch(e){}window.BACK={cam,scroll:(window.__preScroll!=null?window.__preScroll:scr.scrollTop),origin:originKey,q:q.value};window.__preScroll=null;}else window.BACK=null;DK="";renderDetail();
-    setDH("half");scr.scrollTo({top:0,behavior:"smooth"});easeToPlace(p);return;}return _focus();};
+    setDH(window.BACK?"full":"half");scr.scrollTo({top:0,behavior:window.BACK?"auto":"smooth"});easeToPlace(p);return;}return _focus();};
 const _open=openSheet;openSheet=function(id){if(document.body.classList.contains("immap")){select(id,false);focusDetail();return;}return _open(id);};
 window.closeFiche=function(keep){selected=null;try{Object.values(pinEls).forEach(g=>g.classList.remove("active"));}catch(e){}renderDetail();try{GLsync();}catch(e){}if(!keep)setDH("peek");};
 // fullscreen button -> hide header/nav too
@@ -2745,6 +2745,7 @@ function pinImg(cat,big){const S=big?84:64,c=document.createElement("canvas");c.
   emoC(x,EMO[cat]||"•",S/2,S/2,Math.round(S*.44));
   return x.getImageData(0,0,S,S);}
 function glPins(){const m=GL.map;if(!m||m.getLayer("pt-ico"))return;
+  try{m.on("styleimagemissing",ev=>{const id=ev.id||"";const mm=/^([eE])-(.+)$/.exec(id);if(!mm||!CATS[mm[2]]||m.hasImage(id))return;try{m.addImage(id,pinImg(mm[2],mm[1]==="E"),{pixelRatio:2});}catch(e){}});}catch(e){}
   Object.keys(CATS).forEach(k=>{try{if(!m.hasImage("e-"+k))m.addImage("e-"+k,pinImg(k,false),{pixelRatio:2});if(!m.hasImage("E-"+k))m.addImage("E-"+k,pinImg(k,true),{pixelRatio:2});}catch(e){}});
   const dark=getComputedStyle(document.documentElement).colorScheme==="dark";const ink=dark?"#EEF1FA":"#1F2A48",paper=dark?"#1A2240":"#FFFFFF";const star=getComputedStyle(document.documentElement).getPropertyValue("--star").trim()||"#F2B705";
   try{m.setPaintProperty("pt","circle-opacity",0);m.setPaintProperty("pt","circle-stroke-opacity",0);}catch(e){}
@@ -2809,7 +2810,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 80 · 21 oct. 13 h 20";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 81 · 21 oct. 14 h 00";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
