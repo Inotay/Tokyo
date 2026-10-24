@@ -2743,7 +2743,7 @@ function glProtocol(params){const u=params.url.replace("tk://","");
   const k=u.slice(2);const b=GL.idx[k];if(!b)return Promise.resolve({data:new ArrayBuffer(0)});
   return glBundle(b).then(d=>d[k]?glGunzip(d[k]):new ArrayBuffer(0)).then(data=>({data}));}
 const glName=["coalesce",["get","name:en"],["get","name_en"],["get","name:latin"],["get","name"]];
-function glShort(n){return String(n||"").replace(/\s*[（(][^()（）]*[)）]\s*$/,"").replace(/\s*·.*$/,"");}
+function glShort(n){let s=String(n||"").replace(/\s+:\s.*$/,"").replace(/\s*[（(][^()（）]*[)）]\s*$/,"").replace(/\s*·.*$/,"").replace(/,\s.*$/,"").trim();if(s.length>30)s=s.slice(0,28).replace(/\s+\S*$/,"")+"…";return s||String(n||"");}
 function glStyle(){const c=glCol();const W=(a)=>["interpolate",["exponential",1.6],["zoom"]].concat(a);
   const roads=(id,classes,width,color,extra)=>Object.assign({id,type:"line",source:"om","source-layer":"transportation",filter:["all",["in",["get","class"],["literal",classes]],["!=",["get","brunnel"],"tunnel"]],layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":color,"line-width":W(width)}},extra||{});
   return{version:8,glyphs:"tk://g/{fontstack}/{range}.pbf",
@@ -2774,7 +2774,7 @@ function glStyle(){const c=glCol();const W=(a)=>["interpolate",["exponential",1.
 function glC(cat){const v=CATS[cat].c;const m=/^var\((--[^)]+)\)$/.exec(v);if(!m)return v;return getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim()||"#888";}
 function glFeat(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:Object.assign({id:p.id,c:glC(p.cat),n:glShort(p.n),star:isStar(p.id)},extra||{})};}
 function glAddOverlay(){const m=GL.map,c=glCol();const fc={type:"FeatureCollection",features:[]};
-  m.addSource("route",{type:"geojson",data:fc});m.addSource("pl",{type:"geojson",data:fc,cluster:true,clusterRadius:38,clusterMaxZoom:14,clusterProperties:(window.V2CP||undefined)});m.addSource("fix",{type:"geojson",data:fc});m.addSource("me",{type:"geojson",data:fc});
+  m.addSource("route",{type:"geojson",data:fc});m.addSource("pl",{type:"geojson",data:fc,cluster:true,clusterRadius:44,clusterMaxZoom:16,clusterProperties:(window.V2CP||undefined)});m.addSource("fix",{type:"geojson",data:fc});m.addSource("me",{type:"geojson",data:fc});
   m.addLayer({id:"route-line",type:"line",source:"route",filter:["==",["geometry-type"],"LineString"],layout:{"line-cap":"round","line-join":"round"},paint:{"line-color":c.glow,"line-width":4,"line-opacity":.8}},"stn-dot");
   m.addLayer({id:"cl",type:"circle",source:"pl",filter:["has","point_count"],paint:{"circle-color":c.halo,"circle-stroke-color":c.fg,"circle-stroke-width":1.5,"circle-radius":["step",["get","point_count"],15,5,18,12,22]}},"stn-dot");
   m.addLayer({id:"cl-n",type:"symbol",source:"pl",filter:["has","point_count"],layout:{"text-field":["to-string",["get","point_count"]],"text-font":["Noto Sans Bold"],"text-size":13,"text-allow-overlap":true},paint:{"text-color":c.fg}},"stn-dot");
@@ -2792,7 +2792,7 @@ function glAddOverlay(){const m=GL.map,c=glCol();const fc={type:"FeatureCollecti
   m.addLayer({id:"me-label",type:"symbol",source:"me",layout:{"text-field":["get","n"],"text-font":["Noto Sans Bold"],"text-size":11.5,"text-anchor":"top","text-offset":[0,1.4],"text-allow-overlap":true},paint:{"text-color":MEC,"text-halo-color":c.halo,"text-halo-width":1.8}});
 }
 function glRouteStops(day){const d=PLAN.find(x=>x.d===day);if(!d)return[];const out=[];d.stops.forEach(([t,id])=>{const p=byId[id];if(!p||/^ou /.test(t)||p.cat==="base"||!p.lat)return;if(!out.includes(p))out.push(p);});return out;}
-function GLsync(){if(!GL.ready)return;const m=GL.map;
+function GLsync(){if(!GL.ready)return;const m=GL.map;if(!m.getSource("pl")||!m.getSource("fix")){if(window.glHeal&&(GL._hn=(GL._hn||0)+1)<20)setTimeout(window.glHeal,400);return;}GL._hn=0;
   const vis=P.filter(p=>{try{return visible(p)}catch(e){return false}});
   const stops=activeDay?glRouteStops(activeDay):[];const sIds=new Set(stops.map(p=>p.id));
   const fixed=[],pool=[];vis.forEach(p=>{if(p.id===selected||p.cat==="base"||sIds.has(p.id))fixed.push(p);else pool.push(p);});
@@ -2819,9 +2819,9 @@ function initGL(){if(GL.map||!window.maplibregl)return;
   try{const tc=document.createElement("canvas");if(!(tc.getContext("webgl2")||tc.getContext("webgl")))return;}catch(e){return;}
   const box=document.querySelector(".mapbox");const div=document.createElement("div");div.id="glmap";box.insertBefore(div,box.firstChild);
   try{maplibregl.addProtocol("tk",glProtocol);}catch(e){}
-  const m=new maplibregl.Map({container:div,style:glStyle(),bounds:[[139.655,35.645],[139.80,35.735]],minZoom:10,maxZoom:18.5,dragRotate:false,pitchWithRotate:false,touchPitch:false,attributionControl:false,localIdeographFontFamily:"'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif",fadeDuration:120});
+  const m=new maplibregl.Map({container:div,pixelRatio:Math.min(window.devicePixelRatio||1,2),maxTileCacheSize:80,style:glStyle(),bounds:[[139.655,35.645],[139.80,35.735]],minZoom:10,maxZoom:18.5,dragRotate:false,pitchWithRotate:false,touchPitch:false,attributionControl:false,localIdeographFontFamily:"'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif",fadeDuration:120});
   m.touchZoomRotate.disableRotation();m.keyboard.disableRotation&&m.keyboard.disableRotation();
-  GL.map=m;
+  GL.map=m;GL._dark=glDark();
   let fails=0,okTiles=0;m.on("data",e=>{if(e.dataType==="source"&&e.sourceId==="om"&&e.tile)okTiles++;});
   m.on("error",e=>{console.warn("map",e&&e.error);fails++;if(fails>=4&&!okTiles){GL.ready=false;box.classList.remove("gl");div.hidden=true;document.getElementById("zin").onclick=()=>flyTo(vb.x+vb.w/2,vb.y+vb.h/2,vb.w/1.8);document.getElementById("zout").onclick=()=>flyTo(vb.x+vb.w/2,vb.y+vb.h/2,vb.w*1.8);document.getElementById("zreset").onclick=()=>{hideChooser();resetVB();};}});
   m.on("load",()=>{glAddOverlay();GL.ready=true;box.classList.add("gl");GLsync();if(activeDay)glHome();
@@ -2838,7 +2838,7 @@ function initGL(){if(GL.map||!window.maplibregl)return;
   document.getElementById("zout").onclick=()=>m.zoomOut({duration:250});
   document.getElementById("zreset").onclick=()=>{hideChooser();glHome();};
   const hint=document.getElementById("maphint");if(hint)hint.textContent="© OpenStreetMap · OpenFreeMap";
-  const rebuild=()=>{if(!GL.ready)return;GL.ready=false;m.setStyle(glStyle());m.once("styledata",()=>{try{glAddOverlay();}catch(e){}GL.ready=true;GLsync();});};
+  const rebuild=()=>{clearTimeout(GL._rbT);GL._rbT=setTimeout(()=>{const want=glDark();if(GL._dark===want&&m.getSource("pl"))return;if(!GL.ready)return;GL.ready=false;GL._dark=want;let done=false;const fin=()=>{if(done)return;done=true;try{if(!m.getSource("pl"))glAddOverlay();}catch(e){}GL.ready=true;try{window.glHeal?glHeal():GLsync();}catch(e){}};m.once("style.load",fin);try{m.setStyle(glStyle(),{diff:false});}catch(e){fin();}(function poll(n){if(done)return;if(m.isStyleLoaded()){fin();return;}if(n<40)setTimeout(()=>poll(n+1),250);else fin();})(0);},1200);};
   try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",rebuild);}catch(e){}
   new MutationObserver(rebuild).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
   window.addEventListener("resize",()=>m.resize());
@@ -3007,13 +3007,13 @@ function emoC(x,t,cx,cy,px){const S2=Math.ceil(px*2.2),c=document.createElement(
   let d;try{d=y.getImageData(0,0,S2,S2).data;}catch(e){x.drawImage(c,cx-S2/2,cy-S2/2);return;}let a=S2,b=S2,e2=-1,f=-1;for(let yy=0;yy<S2;yy++)for(let ii=0;ii<S2;ii++)if(d[(yy*S2+ii)*4+3]>20){if(ii<a)a=ii;if(ii>e2)e2=ii;if(yy<b)b=yy;if(yy>f)f=yy;}
   if(e2<0){return;}const w=e2-a+1,hh=f-b+1;x.drawImage(c,a,b,w,hh,Math.round(cx-w/2),Math.round(cy-hh/2),w,hh);}
 window.emoC=emoC;
-glFeat=function(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:[p.lng,p.lat]},properties:Object.assign({id:p.id,c:CC[p.cat]||"#888",cat:p.cat,n:glShort(p.n),star:isStar(p.id)},extra||{})};};
+glFeat=function(p,extra){return{type:"Feature",geometry:{type:"Point",coordinates:(window.glSpread?glSpread(p):[p.lng,p.lat])},properties:Object.assign({id:p.id,c:CC[p.cat]||"#888",cat:p.cat,n:glShort(p.n),star:isStar(p.id)},extra||{})};};
 function pinImg(cat,big){const S=big?84:64,c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");const r=S/2-3;
   x.beginPath();x.arc(S/2,S/2,r-3,0,Math.PI*2);x.fillStyle="#fff";x.fill();x.lineWidth=big?9:7;x.strokeStyle=CC[cat]||"#888";x.stroke();
   emoC(x,EMO[cat]||"•",S/2,S/2,Math.round(S*.44));
   return x.getImageData(0,0,S,S);}
 function glPins(){const m=GL.map;if(!m||m.getLayer("pt-ico"))return;
-  try{m.on("styleimagemissing",ev=>{const id=ev.id||"";const mm=/^([eE])-(.+)$/.exec(id);if(!mm||!CATS[mm[2]]||m.hasImage(id))return;try{m.addImage(id,pinImg(mm[2],mm[1]==="E"),{pixelRatio:2});}catch(e){}});}catch(e){}
+  if(!m.__sim)try{m.__sim=1;m.on("styleimagemissing",ev=>{const id=ev.id||"";const mm=/^([eE])-(.+)$/.exec(id);if(!mm||!CATS[mm[2]]||m.hasImage(id))return;try{m.addImage(id,pinImg(mm[2],mm[1]==="E"),{pixelRatio:2});}catch(e){}});}catch(e){}
   Object.keys(CATS).forEach(k=>{try{if(!m.hasImage("e-"+k))m.addImage("e-"+k,pinImg(k,false),{pixelRatio:2});if(!m.hasImage("E-"+k))m.addImage("E-"+k,pinImg(k,true),{pixelRatio:2});}catch(e){}});
   const dark=getComputedStyle(document.documentElement).colorScheme==="dark";const ink=dark?"#EEF1FA":"#1F2A48",paper=dark?"#1A2240":"#FFFFFF";const star=getComputedStyle(document.documentElement).getPropertyValue("--star").trim()||"#F2B705";
   try{m.setPaintProperty("pt","circle-opacity",0);m.setPaintProperty("pt","circle-stroke-opacity",0);}catch(e){}
@@ -3026,6 +3026,7 @@ function glPins(){const m=GL.map;if(!m||m.getLayer("pt-ico"))return;
   try{m.setLayoutProperty("fix-num","visibility","none");m.setLayoutProperty("fix-label","text-offset",[1.8,0]);m.setPaintProperty("fix-label","text-color",ink);m.setPaintProperty("fix-label","text-halo-color",paper);}catch(e){}
   try{m.setPaintProperty("cl","circle-color",paper);m.setPaintProperty("cl","circle-stroke-color",ink);m.setPaintProperty("cl","circle-stroke-width",3);m.setPaintProperty("cl-n","text-color",ink);}catch(e){}
   try{GLsync();}catch(e){}}
+window.__glPins=glPins;
 (function waitGL(n){if(typeof GL!=="undefined"&&GL.ready&&GL.map){try{glPins();}catch(e){reportErr(e);}return;}if(n<200)setTimeout(()=>waitGL(n+1),150);})(0);
 
 // ---------- navigation : retour arrière (geste iPhone, bouton retour) sur une pile de couches
@@ -3078,7 +3079,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 108 · 24 oct. 10 h 50";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 109 · 24 oct. 11 h 15";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
@@ -3153,6 +3154,7 @@ function clFam(){const m=GL.map;if(!m||m.getLayer("cl-fam")||!m.getLayer("cl"))r
   try{m.addLayer({id:"cl-fam",type:"symbol",source:"pl",filter:["all",["has","point_count"],["has","f0"]],layout:{"icon-image":pick,"icon-size":["step",["get","point_count"],.95,6,1.08,15,1.2],"icon-allow-overlap":true,"icon-ignore-placement":true}});}catch(err){}
   try{m.setPaintProperty("cl","circle-opacity",0);m.setPaintProperty("cl","circle-stroke-opacity",0);m.moveLayer("cl-n");m.setLayoutProperty("cl-n","text-offset",[1.15,1.05]);m.setLayoutProperty("cl-n","text-size",12);m.setPaintProperty("cl-n","text-color","#ffffff");m.setPaintProperty("cl-n","text-halo-color","#1F2A48");m.setPaintProperty("cl-n","text-halo-width",3.2);}catch(e){}
   try{m.setLayoutProperty("pt-ico","icon-size",["interpolate",["linear"],["zoom"],10,.85,14,1,16,1.12]);}catch(e){}}
+window.__clFam=clFam;
 (function wait(n){if(typeof GL!=="undefined"&&GL.ready&&GL.map&&GL.map.getLayer("pt-ico")){clFam();return;}if(n<240)setTimeout(()=>wait(n+1),150);})(0);
 })();
 
@@ -3435,6 +3437,54 @@ setTimeout(openFromHash,1200);
 })();
 </script>
 <!--SHEND-->
+<!--MFSTART-->
+<style>
+@property --dh{syntax:"<length>";inherits:false;initial-value:96px}
+@property --peek{syntax:"<length>";inherits:false;initial-value:96px}
+.dgrab,.mtop .mrow,.mapctl,nav.tabs{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+body.immap #placelist>.row{content-visibility:auto;contain-intrinsic-size:auto 84px}
+</style>
+<script>
+(function(){
+if(typeof GL==="undefined")return;
+// tiroir : les variables --dh et --peek sont posées sur les seuls éléments qui s'en servent (sinon chaque geste recalcule toute la page)
+(function(){const rs=document.documentElement.style;if(rs.__dh)return;rs.__dh=1;const orig=rs.setProperty.bind(rs);
+  const T={"--dh":".cardcol","--peek":".mapctl,.chooser"};
+  const put=(k,v,pr)=>document.querySelectorAll(T[k]).forEach(e=>e.style.setProperty(k,v,pr));
+  rs.setProperty=function(k,v,pr){if(T[k]){put(k,v,pr);return;}return orig(k,v,pr);};
+  Object.keys(T).forEach(k=>{const v=rs.getPropertyValue(k);if(v)put(k,v.trim());});
+  new MutationObserver(()=>{const ch=document.querySelector(".chooser");if(ch&&!ch.style.getPropertyValue("--peek")){const v=(document.querySelector(".mapctl")||{style:{getPropertyValue:()=>""}}).style.getPropertyValue("--peek");if(v)ch.style.setProperty("--peek",v);}}).observe(document.body,{childList:true});})();
+// lieux au même endroit : on les écarte en petit cercle pour qu'ils restent lisibles et cliquables
+let SPR=null;
+function buildSpread(){SPR={};const L=P.filter(p=>p.lat&&p.lng&&p.cat!=="base");const used=new Set();
+  const close=(a,b)=>Math.abs(a.lat-b.lat)*111000<24&&Math.abs(a.lng-b.lng)*90800<24;
+  for(const a of L){if(used.has(a.id))continue;const g=[a];used.add(a.id);
+    for(let i=0;i<g.length;i++)for(const b of L)if(!used.has(b.id)&&close(g[i],b)){g.push(b);used.add(b.id);}
+    if(g.length<2)continue;const cl=g.reduce((s,p)=>s+p.lat,0)/g.length,cg=g.reduce((s,p)=>s+p.lng,0)/g.length;
+    const r=Math.max(24,g.length*8);g.sort((x,y)=>x.id<y.id?-1:1).forEach((p,i)=>{const t=2*Math.PI*i/g.length-Math.PI/2;SPR[p.id]=[cg+Math.cos(t)*r/90800,cl+Math.sin(t)*r/111000];});}}
+window.glSpread=function(p){if(!SPR)buildSpread();return SPR[p.id]||[p.lng,p.lat];};
+// réparer la carte si les icônes ont disparu (changement clair/sombre, retour d'arrière-plan, contexte WebGL perdu)
+let healing=false;
+function glHeal(){const m=GL.map;if(!m||healing)return;healing=true;
+  try{if(GL.ready){if(!m.getSource("pl")){try{glAddOverlay();}catch(e){}}
+    try{if(window.__glPins)__glPins();}catch(e){}try{if(window.__clFam)__clFam();}catch(e){}}}catch(e){}
+  healing=false;try{GLsync();}catch(e){}}
+window.glHeal=glHeal;
+function broken(){const m=GL.map;return !!(m&&GL.ready&&(!m.getSource("pl")||!m.getLayer("pt-ico")||!m.getLayer("fix-ico")));}
+setInterval(()=>{if(document.visibilityState==="visible"&&broken())glHeal();},2500);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")[400,1500].forEach(t=>setTimeout(()=>{if(broken())glHeal();},t));});
+window.addEventListener("pageshow",()=>setTimeout(()=>{if(broken())glHeal();},600));
+(function hook(n){const m=GL.map;if(!m){if(n<200)setTimeout(()=>hook(n+1),200);return;}
+  try{m.on("webglcontextrestored",()=>setTimeout(glHeal,300));}catch(e){}})(0);
+// si iOS recharge l'app (mémoire), rouvrir la fiche qu'on regardait
+const K="tk-lastsel";
+setInterval(()=>{try{const s=(typeof selected!=="undefined"&&selected)?selected:"";localStorage.setItem(K,JSON.stringify({s,t:Date.now()}));}catch(e){}},2000);
+setTimeout(()=>{try{if(/[#&]p=/.test(location.hash))return;const v=JSON.parse(localStorage.getItem(K)||"null");
+  if(!v||!v.s||Date.now()-v.t>30*60e3||(typeof selected!=="undefined"&&selected))return;if(!P.some(x=>x.id===v.s))return;
+  select(v.s,true);if(typeof focusDetail==="function")focusDetail();}catch(e){}},1600);
+})();
+</script>
+<!--MFEND-->
 
 <script>
 (function(){
