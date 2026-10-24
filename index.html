@@ -3079,7 +3079,7 @@ setDH("peek");showTab(cur);render();
 
 
 //V2B
-(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 110 · 24 oct. 11 h 40";v.appendChild(d);}})();
+(function(){const v=document.getElementById("view-prac");if(v&&!document.getElementById("vstamp")){const d=document.createElement("p");d.id="vstamp";d.style.cssText="text-align:center;color:var(--fg3);font-size:13px;margin:24px 0 8px";d.textContent="Version 111 · 24 oct. 12 h 15";v.appendChild(d);}})();
 // ===================== v2b : mesures fiables, envies compactes, grappes illustrées =====================
 (function(){
 const FAMI=["🍙","🛍️","⛩️","💄","💋"];
@@ -3386,6 +3386,7 @@ function syncChip(){if(AREA.size){chip.setAttribute("aria-pressed","true");chip.
   else{chip.setAttribute("aria-pressed","false");chip.innerHTML='📍 <span>Quartiers</span>';}
   const t=document.querySelector(".dgrab .dtt");if(t&&AREA.size)t.textContent=lbl();}
 chip.onclick=e=>{if(AREA.size&&e.target.closest(".qx")){pick(null);return;}open();};
+window.clearArea=()=>{if(!AREA.size)return;AREA.clear();syncChip();};
 const _r=render;render=function(){_r.apply(this,arguments);try{syncChip();}catch(e){}};
 syncChip();
 // quartier visible dans la fiche
@@ -3485,6 +3486,56 @@ setTimeout(()=>{try{if(/[#&]p=/.test(location.hash))return;const v=JSON.parse(lo
 })();
 </script>
 <!--MFEND-->
+<!--RSTART-->
+<style>
+.mqx{flex:none;height:38px;border-radius:999px;border:0;background:var(--fg);color:var(--bg);font-weight:800;font-size:14px;padding:0 14px;display:flex;align-items:center;gap:6px;box-shadow:var(--sh);white-space:nowrap;font-family:inherit;cursor:pointer}
+.mqx[hidden]{display:none}
+.lp-on{position:relative;overflow:hidden}
+.lp-on::after{content:"";position:absolute;inset:0;background:rgba(242,138,182,.45);transform-origin:left;animation:lpfill 1.2s linear forwards;pointer-events:none;border-radius:inherit}
+@keyframes lpfill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+#zcomp{display:none;align-items:center;justify-content:center}
+#zcomp.on{display:flex}
+#zcomp svg{width:22px;height:22px;transition:transform .1s linear}
+</style>
+<script>
+(function(){
+if(typeof render!=="function")return;
+// ---- tout effacer : un bouton visible dès qu'un filtre est actif + appui long sur n'importe quel filtre
+function active(){try{return !!(openOnly||relFilter||whenDay!=="now"||activeDay||(typeof QUERY!=="undefined"&&QUERY)||activeCats.size<Object.keys(CATS).length||(window.getArea&&getArea().length));}catch(e){return false;}}
+function clearAll(){try{if(window.clearArea)clearArea();}catch(e){}
+  try{resetFilters();}catch(e){try{render();}catch(_){}}
+  try{if(typeof fillFilters==="function"&&document.querySelector(".fsh.on"))fillFilters();}catch(e){}
+  try{if(typeof syncFS==="function")syncFS();}catch(e){}
+  try{if(typeof glHome==="function"&&window.getArea)glHome();}catch(e){}
+  sync();}
+window.clearAllFilters=clearAll;
+const row=document.querySelector(".mtop .mrow");
+const x=document.createElement("button");x.type="button";x.className="mqx";x.hidden=true;x.innerHTML="✕ Effacer";
+x.onclick=e=>{e.stopPropagation();clearAll();};
+if(row)row.insertBefore(x,row.firstChild);
+function sync(){const h=!active();if(x.hidden&&!h&&row)setTimeout(()=>{try{row.scrollTo({left:0,behavior:"smooth"});}catch(e){}},50);x.hidden=h;}
+const _r=render;render=function(){_r.apply(this,arguments);try{sync();}catch(e){}};
+sync();
+// appui long (1,2 s) sur un bouton de filtre
+let T=null,el=null,sx=0,sy=0,eat=0;
+const SEL=".mtop .mq,.mtop .mqa,.mtop .mqx,#relfilters .chip,#catfilters .chip,#ohbar .chip,.fsh .ftile,.fsh .seg button,#fsbar .fsb";
+function stop(){clearTimeout(T);T=null;if(el)el.classList.remove("lp-on");el=null;}
+document.addEventListener("pointerdown",e=>{const b=e.target.closest(SEL);if(!b)return;stop();el=b;sx=e.clientX;sy=e.clientY;b.classList.add("lp-on");
+  T=setTimeout(()=>{const was=active();stop();eat=Date.now();clearAll();try{navigator.vibrate&&navigator.vibrate(30);}catch(_){}if(!was&&typeof toast==="function")toast("Aucun filtre actif : tout est déjà affiché");},1200);},true);
+document.addEventListener("pointermove",e=>{if(el&&Math.hypot(e.clientX-sx,e.clientY-sy)>12)stop();},true);
+["pointerup","pointercancel","scroll"].forEach(t=>document.addEventListener(t,stop,true));
+document.addEventListener("click",e=>{if(Date.now()-eat<800&&e.target.closest(SEL)){e.stopPropagation();e.preventDefault();eat=0;}},true);
+document.addEventListener("contextmenu",e=>{if(e.target.closest(SEL))e.preventDefault();},true);
+// ---- rotation de la carte à deux doigts + boussole pour revenir au nord
+(function hook(n){const m=(typeof GL!=="undefined")&&GL.map;if(!m){if(n<300)setTimeout(()=>hook(n+1),200);return;}
+  try{m.touchZoomRotate.enableRotation();}catch(e){}try{m.dragRotate.enable();}catch(e){}try{m.keyboard.enableRotation&&m.keyboard.enableRotation();}catch(e){}
+  const ctl=document.querySelector(".mapctl");if(ctl&&!document.getElementById("zcomp")){const b=document.createElement("button");b.id="zcomp";b.setAttribute("aria-label","Remettre le nord en haut");
+    b.innerHTML='<svg viewBox="0 0 24 24"><path d="M12 2l4 10h-8z" fill="#E5484D"/><path d="M12 22l-4-10h8z" fill="currentColor" opacity=".55"/></svg>';
+    b.onclick=e=>{e.stopPropagation();m.easeTo({bearing:0,duration:400});};ctl.insertBefore(b,ctl.firstChild);
+    const up=()=>{const br=m.getBearing();b.classList.toggle("on",Math.abs(br)>0.5);b.querySelector("svg").style.transform=`rotate(${-br}deg)`;};m.on("rotate",up);m.on("moveend",up);up();}})(0);
+})();
+</script>
+<!--REND-->
 
 <script>
 (function(){
